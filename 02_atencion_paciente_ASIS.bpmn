@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Defs_Proc_AtencionASIS" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Generador académico" exporterVersion="1.0">
+  <bpmn:collaboration id="Collab_Proc_AtencionASIS"><bpmn:participant id="Pool_Proc_AtencionASIS" name="Hospital Regional – Atención del paciente (AS-IS, sistemas aislados)" processRef="Proc_AtencionASIS"/></bpmn:collaboration>
+  <bpmn:process id="Proc_AtencionASIS" isExecutable="false">
+    <bpmn:laneSet id="LaneSet_1">
+      <bpmn:lane id="Lane_pac" name="Paciente">
+        <bpmn:flowNodeRef>s</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>p1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>p2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>p3</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>e</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_cit" name="Citas (Sistema A)">
+        <bpmn:flowNodeRef>c1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>c2</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_med" name="Consultorio">
+        <bpmn:flowNodeRef>m1</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_lab" name="Laboratorio (Sist. B)">
+        <bpmn:flowNodeRef>l1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>l2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>l3</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_far" name="Farmacia (Sist. C)">
+        <bpmn:flowNodeRef>f1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>f2</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_fac" name="Facturación (Sist. D)">
+        <bpmn:flowNodeRef>k1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>k2</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="s" name="Necesita atención"><bpmn:outgoing>Flow_1</bpmn:outgoing></bpmn:startEvent>
+    <bpmn:manualTask id="p1" name="Hacer cola y pedir cita en ventanilla"><bpmn:incoming>Flow_1</bpmn:incoming><bpmn:outgoing>Flow_2</bpmn:outgoing></bpmn:manualTask>
+    <bpmn:userTask id="c1" name="Registrar datos del paciente (1.ª vez)"><bpmn:incoming>Flow_2</bpmn:incoming><bpmn:outgoing>Flow_3</bpmn:outgoing></bpmn:userTask>
+    <bpmn:userTask id="c2" name="Asignar cita manualmente"><bpmn:incoming>Flow_3</bpmn:incoming><bpmn:outgoing>Flow_4</bpmn:outgoing></bpmn:userTask>
+    <bpmn:userTask id="m1" name="Consulta; orden y receta en papel"><bpmn:incoming>Flow_4</bpmn:incoming><bpmn:outgoing>Flow_5</bpmn:outgoing></bpmn:userTask>
+    <bpmn:manualTask id="p2" name="Llevar orden al laboratorio"><bpmn:incoming>Flow_5</bpmn:incoming><bpmn:outgoing>Flow_6</bpmn:outgoing></bpmn:manualTask>
+    <bpmn:userTask id="l1" name="Volver a registrar datos (2.ª vez)"><bpmn:incoming>Flow_6</bpmn:incoming><bpmn:outgoing>Flow_7</bpmn:outgoing></bpmn:userTask>
+    <bpmn:manualTask id="l2" name="Tomar y procesar muestra"><bpmn:incoming>Flow_7</bpmn:incoming><bpmn:outgoing>Flow_8</bpmn:outgoing></bpmn:manualTask>
+    <bpmn:manualTask id="l3" name="Entregar resultado impreso (2–5 días)"><bpmn:incoming>Flow_8</bpmn:incoming><bpmn:outgoing>Flow_9</bpmn:outgoing></bpmn:manualTask>
+    <bpmn:manualTask id="p3" name="Llevar receta a farmacia"><bpmn:incoming>Flow_9</bpmn:incoming><bpmn:outgoing>Flow_10</bpmn:outgoing></bpmn:manualTask>
+    <bpmn:userTask id="f1" name="Volver a registrar datos (3.ª vez)"><bpmn:incoming>Flow_10</bpmn:incoming><bpmn:outgoing>Flow_11</bpmn:outgoing></bpmn:userTask>
+    <bpmn:manualTask id="f2" name="Dispensar sin stock en línea"><bpmn:incoming>Flow_11</bpmn:incoming><bpmn:outgoing>Flow_12</bpmn:outgoing></bpmn:manualTask>
+    <bpmn:userTask id="k1" name="Registrar datos y digitar cargos (4.ª vez)"><bpmn:incoming>Flow_12</bpmn:incoming><bpmn:outgoing>Flow_13</bpmn:outgoing></bpmn:userTask>
+    <bpmn:manualTask id="k2" name="Cobrar (errores de facturación)"><bpmn:incoming>Flow_13</bpmn:incoming><bpmn:outgoing>Flow_14</bpmn:outgoing></bpmn:manualTask>
+    <bpmn:endEvent id="e" name="Paciente atendido (proceso lento)"><bpmn:incoming>Flow_14</bpmn:incoming></bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_1" sourceRef="s" targetRef="p1"/>
+    <bpmn:sequenceFlow id="Flow_2" sourceRef="p1" targetRef="c1"/>
+    <bpmn:sequenceFlow id="Flow_3" sourceRef="c1" targetRef="c2"/>
+    <bpmn:sequenceFlow id="Flow_4" sourceRef="c2" targetRef="m1"/>
+    <bpmn:sequenceFlow id="Flow_5" sourceRef="m1" targetRef="p2"/>
+    <bpmn:sequenceFlow id="Flow_6" sourceRef="p2" targetRef="l1"/>
+    <bpmn:sequenceFlow id="Flow_7" sourceRef="l1" targetRef="l2"/>
+    <bpmn:sequenceFlow id="Flow_8" sourceRef="l2" targetRef="l3"/>
+    <bpmn:sequenceFlow id="Flow_9" sourceRef="l3" targetRef="p3"/>
+    <bpmn:sequenceFlow id="Flow_10" sourceRef="p3" targetRef="f1"/>
+    <bpmn:sequenceFlow id="Flow_11" sourceRef="f1" targetRef="f2"/>
+    <bpmn:sequenceFlow id="Flow_12" sourceRef="f2" targetRef="k1"/>
+    <bpmn:sequenceFlow id="Flow_13" sourceRef="k1" targetRef="k2"/>
+    <bpmn:sequenceFlow id="Flow_14" sourceRef="k2" targetRef="e"/>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="Diag_Proc_AtencionASIS"><bpmndi:BPMNPlane id="Plane_Proc_AtencionASIS" bpmnElement="Collab_Proc_AtencionASIS">
+    <bpmndi:BPMNShape id="Pool_Proc_AtencionASIS_di" bpmnElement="Pool_Proc_AtencionASIS" isHorizontal="true"><dc:Bounds x="20" y="20" width="1848" height="840"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="Lane_pac_di" bpmnElement="Lane_pac" isHorizontal="true"><dc:Bounds x="50" y="20" width="1818" height="140"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="Lane_cit_di" bpmnElement="Lane_cit" isHorizontal="true"><dc:Bounds x="50" y="160" width="1818" height="140"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="Lane_med_di" bpmnElement="Lane_med" isHorizontal="true"><dc:Bounds x="50" y="300" width="1818" height="140"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="Lane_lab_di" bpmnElement="Lane_lab" isHorizontal="true"><dc:Bounds x="50" y="440" width="1818" height="140"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="Lane_far_di" bpmnElement="Lane_far" isHorizontal="true"><dc:Bounds x="50" y="580" width="1818" height="140"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="Lane_fac_di" bpmnElement="Lane_fac" isHorizontal="true"><dc:Bounds x="50" y="720" width="1818" height="140"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="s_di" bpmnElement="s"><dc:Bounds x="186" y="72" width="36" height="36"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="p1_di" bpmnElement="p1"><dc:Bounds x="284" y="54" width="124" height="72"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="c1_di" bpmnElement="c1"><dc:Bounds x="426" y="194" width="124" height="72"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="c2_di" bpmnElement="c2"><dc:Bounds x="568" y="194" width="124" height="72"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="m1_di" bpmnElement="m1"><dc:Bounds x="710" y="334" width="124" height="72"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="p2_di" bpmnElement="p2"><dc:Bounds x="852" y="54" width="124" height="72"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="l1_di" bpmnElement="l1"><dc:Bounds x="852" y="474" width="124" height="72"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="l2_di" bpmnElement="l2"><dc:Bounds x="994" y="474" width="124" height="72"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="l3_di" bpmnElement="l3"><dc:Bounds x="1136" y="474" width="124" height="72"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="p3_di" bpmnElement="p3"><dc:Bounds x="1278" y="54" width="124" height="72"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="f1_di" bpmnElement="f1"><dc:Bounds x="1278" y="614" width="124" height="72"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="f2_di" bpmnElement="f2"><dc:Bounds x="1420" y="614" width="124" height="72"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="k1_di" bpmnElement="k1"><dc:Bounds x="1420" y="754" width="124" height="72"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="k2_di" bpmnElement="k2"><dc:Bounds x="1562" y="754" width="124" height="72"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="e_di" bpmnElement="e"><dc:Bounds x="1748" y="72" width="36" height="36"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNEdge id="Flow_1_di" bpmnElement="Flow_1"><di:waypoint x="222" y="90"/><di:waypoint x="284" y="90"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="Flow_2_di" bpmnElement="Flow_2"><di:waypoint x="408" y="90"/><di:waypoint x="417" y="90"/><di:waypoint x="417" y="230"/><di:waypoint x="426" y="230"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="Flow_3_di" bpmnElement="Flow_3"><di:waypoint x="550" y="230"/><di:waypoint x="568" y="230"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="Flow_4_di" bpmnElement="Flow_4"><di:waypoint x="692" y="230"/><di:waypoint x="701" y="230"/><di:waypoint x="701" y="370"/><di:waypoint x="710" y="370"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="Flow_5_di" bpmnElement="Flow_5"><di:waypoint x="834" y="370"/><di:waypoint x="843" y="370"/><di:waypoint x="843" y="90"/><di:waypoint x="852" y="90"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="Flow_6_di" bpmnElement="Flow_6"><di:waypoint x="914" y="126"/><di:waypoint x="914" y="474"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="Flow_7_di" bpmnElement="Flow_7"><di:waypoint x="976" y="510"/><di:waypoint x="994" y="510"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="Flow_8_di" bpmnElement="Flow_8"><di:waypoint x="1118" y="510"/><di:waypoint x="1136" y="510"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="Flow_9_di" bpmnElement="Flow_9"><di:waypoint x="1260" y="510"/><di:waypoint x="1269" y="510"/><di:waypoint x="1269" y="90"/><di:waypoint x="1278" y="90"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="Flow_10_di" bpmnElement="Flow_10"><di:waypoint x="1340" y="126"/><di:waypoint x="1340" y="614"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="Flow_11_di" bpmnElement="Flow_11"><di:waypoint x="1402" y="650"/><di:waypoint x="1420" y="650"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="Flow_12_di" bpmnElement="Flow_12"><di:waypoint x="1482" y="686"/><di:waypoint x="1482" y="754"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="Flow_13_di" bpmnElement="Flow_13"><di:waypoint x="1544" y="790"/><di:waypoint x="1562" y="790"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="Flow_14_di" bpmnElement="Flow_14"><di:waypoint x="1686" y="790"/><di:waypoint x="1726" y="790"/><di:waypoint x="1726" y="90"/><di:waypoint x="1748" y="90"/></bpmndi:BPMNEdge>
+  </bpmndi:BPMNPlane></bpmndi:BPMNDiagram>
+</bpmn:definitions>

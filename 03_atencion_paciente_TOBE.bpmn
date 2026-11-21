@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Defs_Proc_AtencionTOBE" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Generador académico" exporterVersion="1.0">
+  <bpmn:collaboration id="Collab_Proc_AtencionTOBE"><bpmn:participant id="Pool_Proc_AtencionTOBE" name="Hospital Regional Inteligente – Atención integrada del paciente (TO-BE)" processRef="Proc_AtencionTOBE"/></bpmn:collaboration>
+  <bpmn:process id="Proc_AtencionTOBE" isExecutable="false">
+    <bpmn:laneSet id="LaneSet_1">
+      <bpmn:lane id="Lane_pac" name="Paciente">
+        <bpmn:flowNodeRef>s</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>p1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>p2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>p3</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>e</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_plat" name="Plataforma integrada">
+        <bpmn:flowNodeRef>a1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>g1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>g2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>a2</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_adm" name="Admisión">
+        <bpmn:flowNodeRef>r1</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_med" name="Médico">
+        <bpmn:flowNodeRef>m1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>g3</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>g4</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_lab" name="Laboratorio">
+        <bpmn:flowNodeRef>l1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>l2</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_far" name="Farmacia">
+        <bpmn:flowNodeRef>f1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>f2</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_fac" name="Facturación">
+        <bpmn:flowNodeRef>k1</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="s" name="Requiere atención"><bpmn:outgoing>Flow_1</bpmn:outgoing></bpmn:startEvent>
+    <bpmn:userTask id="p1" name="Solicitar cita (web, app o ventanilla)"><bpmn:incoming>Flow_1</bpmn:incoming><bpmn:outgoing>Flow_2</bpmn:outgoing></bpmn:userTask>
+    <bpmn:serviceTask id="a1" name="Validar identidad en índice maestro (MPI)"><bpmn:incoming>Flow_2</bpmn:incoming><bpmn:outgoing>Flow_3</bpmn:outgoing></bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="g1" name="¿Paciente registrado?"><bpmn:incoming>Flow_3</bpmn:incoming><bpmn:outgoing>Flow_4</bpmn:outgoing><bpmn:outgoing>Flow_5</bpmn:outgoing></bpmn:exclusiveGateway>
+    <bpmn:userTask id="r1" name="Registrar paciente una única vez"><bpmn:incoming>Flow_4</bpmn:incoming><bpmn:outgoing>Flow_6</bpmn:outgoing></bpmn:userTask>
+    <bpmn:exclusiveGateway id="g2" name=""><bpmn:incoming>Flow_5</bpmn:incoming><bpmn:incoming>Flow_6</bpmn:incoming><bpmn:outgoing>Flow_7</bpmn:outgoing></bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="a2" name="Asignar cita y notificar (SMS / app)"><bpmn:incoming>Flow_7</bpmn:incoming><bpmn:outgoing>Flow_8</bpmn:outgoing><bpmn:dataOutputAssociation id="Assoc_1"><bpmn:targetRef>db</bpmn:targetRef></bpmn:dataOutputAssociation></bpmn:serviceTask>
+    <bpmn:userTask id="p2" name="Check-in con QR o DNI"><bpmn:incoming>Flow_8</bpmn:incoming><bpmn:outgoing>Flow_9</bpmn:outgoing></bpmn:userTask>
+    <bpmn:userTask id="m1" name="Atender consulta y registrar en HCE"><bpmn:incoming>Flow_9</bpmn:incoming><bpmn:outgoing>Flow_10</bpmn:outgoing><bpmn:dataOutputAssociation id="Assoc_2"><bpmn:targetRef>db</bpmn:targetRef></bpmn:dataOutputAssociation></bpmn:userTask>
+    <bpmn:inclusiveGateway id="g3" name="¿Qué órdenes emite?"><bpmn:incoming>Flow_10</bpmn:incoming><bpmn:outgoing>Flow_11</bpmn:outgoing><bpmn:outgoing>Flow_12</bpmn:outgoing><bpmn:outgoing>Flow_13</bpmn:outgoing></bpmn:inclusiveGateway>
+    <bpmn:userTask id="l1" name="Tomar y procesar muestra"><bpmn:incoming>Flow_11</bpmn:incoming><bpmn:outgoing>Flow_14</bpmn:outgoing></bpmn:userTask>
+    <bpmn:serviceTask id="l2" name="Validar, publicar en HCE y notificar"><bpmn:incoming>Flow_14</bpmn:incoming><bpmn:outgoing>Flow_16</bpmn:outgoing><bpmn:dataOutputAssociation id="Assoc_3"><bpmn:targetRef>db</bpmn:targetRef></bpmn:dataOutputAssociation></bpmn:serviceTask>
+    <bpmn:serviceTask id="f1" name="Verificar stock y reservar (SCM)"><bpmn:incoming>Flow_12</bpmn:incoming><bpmn:outgoing>Flow_15</bpmn:outgoing></bpmn:serviceTask>
+    <bpmn:userTask id="f2" name="Dispensar receta electrónica"><bpmn:incoming>Flow_15</bpmn:incoming><bpmn:outgoing>Flow_17</bpmn:outgoing></bpmn:userTask>
+    <bpmn:inclusiveGateway id="g4" name=""><bpmn:incoming>Flow_13</bpmn:incoming><bpmn:incoming>Flow_16</bpmn:incoming><bpmn:incoming>Flow_17</bpmn:incoming><bpmn:outgoing>Flow_18</bpmn:outgoing></bpmn:inclusiveGateway>
+    <bpmn:serviceTask id="k1" name="Consolidar cargos y emitir factura electrónica (ERP)"><bpmn:incoming>Flow_18</bpmn:incoming><bpmn:outgoing>Flow_19</bpmn:outgoing></bpmn:serviceTask>
+    <bpmn:userTask id="p3" name="Pagar y recibir comprobante digital"><bpmn:incoming>Flow_19</bpmn:incoming><bpmn:outgoing>Flow_20</bpmn:outgoing></bpmn:userTask>
+    <bpmn:endEvent id="e" name="Atención completada"><bpmn:incoming>Flow_20</bpmn:incoming></bpmn:endEvent>
+    <bpmn:dataStoreReference id="db" name="BD única: MPI + HCE + ERP"/>
+    <bpmn:sequenceFlow id="Flow_1" sourceRef="s" targetRef="p1"/>
+    <bpmn:sequenceFlow id="Flow_2" sourceRef="p1" targetRef="a1"/>
+    <bpmn:sequenceFlow id="Flow_3" sourceRef="a1" targetRef="g1"/>
+    <bpmn:sequenceFlow id="Flow_4" name="No" sourceRef="g1" targetRef="r1"/>
+    <bpmn:sequenceFlow id="Flow_5" name="Sí" sourceRef="g1" targetRef="g2"/>
+    <bpmn:sequenceFlow id="Flow_6" sourceRef="r1" targetRef="g2"/>
+    <bpmn:sequenceFlow id="Flow_7" sourceRef="g2" targetRef="a2"/>
+    <bpmn:sequenceFlow id="Flow_8" sourceRef="a2" targetRef="p2"/>
+    <bpmn:sequenceFlow id="Flow_9" sourceRef="p2" targetRef="m1"/>
+    <bpmn:sequenceFlow id="Flow_10" sourceRef="m1" targetRef="g3"/>
+    <bpmn:sequenceFlow id="Flow_11" name="Análisis" sourceRef="g3" targetRef="l1"/>
+    <bpmn:sequenceFlow id="Flow_12" name="Receta" sourceRef="g3" targetRef="f1"/>
+    <bpmn:sequenceFlow id="Flow_13" name="Solo consulta" sourceRef="g3" targetRef="g4"/>
+    <bpmn:sequenceFlow id="Flow_14" sourceRef="l1" targetRef="l2"/>
+    <bpmn:sequenceFlow id="Flow_15" sourceRef="f1" targetRef="f2"/>
+    <bpmn:sequenceFlow id="Flow_16" sourceRef="l2" targetRef="g4"/>
+    <bpmn:sequenceFlow id="Flow_17" sourceRef="f2" targetRef="g4"/>
+    <bpmn:sequenceFlow id="Flow_18" sourceRef="g4" targetRef="k1"/>
+    <bpmn:sequenceFlow id="Flow_19" sourceRef="k1" targetRef="p3"/>
+    <bpmn:sequenceFlow id="Flow_20" sourceRef="p3" targetRef="e"/>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="Diag_Proc_AtencionTOBE"><bpmndi:BPMNPlane id="Plane_Proc_AtencionTOBE" bpmnElement="Collab_Proc_AtencionTOBE">
+    <bpmndi:BPMNShape id="Pool_Proc_AtencionTOBE_di" bpmnElement="Pool_Proc_AtencionTOBE" isHorizontal="true"><dc:Bounds x="20" y="20" width="2274" height="980"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="Lane_pac_di" bpmnElement="Lane_pac" isHorizontal="true"><dc:Bounds x="50" y="20" width="2244" height="140"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="Lane_plat_di" bpmnElement="Lane_plat" isHorizontal="true"><dc:Bounds x="50" y="160" width="2244" height="140"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="Lane_adm_di" bpmnElement="Lane_adm" isHorizontal="true"><dc:Bounds x="50" y="300" width="2244" height="140"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="Lane_med_di" bpmnElement="Lane_med" isHorizontal="true"><dc:Bounds x="50" y="440" width="2244" height="140"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="Lane_lab_di" bpmnElement="Lane_lab" isHorizontal="true"><dc:Bounds x="50" y="580" width="2244" height="140"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="Lane_far_di" bpmnElement="Lane_far" isHorizontal="true"><dc:Bounds x="50" y="720" width="2244" height="140"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="Lane_fac_di" bpmnElement="Lane_fac" isHorizontal="true"><dc:Bounds x="50" y="860" width="2244" height="140"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="s_di" bpmnElement="s"><dc:Bounds x="186" y="72" width="36" height="36"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="p1_di" bpmnElement="p1"><dc:Bounds x="284" y="54" width="124" height="72"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="a1_di" bpmnElement="a1"><dc:Bounds x="426" y="194" width="124" height="72"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="g1_di" bpmnElement="g1" isMarkerVisible="true"><dc:Bounds x="607" y="207" width="46" height="46"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="r1_di" bpmnElement="r1"><dc:Bounds x="568" y="334" width="124" height="72"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="g2_di" bpmnElement="g2" isMarkerVisible="true"><dc:Bounds x="749" y="207" width="46" height="46"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="a2_di" bpmnElement="a2"><dc:Bounds x="852" y="194" width="124" height="72"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="p2_di" bpmnElement="p2"><dc:Bounds x="994" y="54" width="124" height="72"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="m1_di" bpmnElement="m1"><dc:Bounds x="1136" y="474" width="124" height="72"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="g3_di" bpmnElement="g3"><dc:Bounds x="1317" y="487" width="46" height="46"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="l1_di" bpmnElement="l1"><dc:Bounds x="1420" y="614" width="124" height="72"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="l2_di" bpmnElement="l2"><dc:Bounds x="1562" y="614" width="124" height="72"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="f1_di" bpmnElement="f1"><dc:Bounds x="1420" y="754" width="124" height="72"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="f2_di" bpmnElement="f2"><dc:Bounds x="1562" y="754" width="124" height="72"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="g4_di" bpmnElement="g4"><dc:Bounds x="1743" y="487" width="46" height="46"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="k1_di" bpmnElement="k1"><dc:Bounds x="1846" y="894" width="124" height="72"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="p3_di" bpmnElement="p3"><dc:Bounds x="1988" y="54" width="124" height="72"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="e_di" bpmnElement="e"><dc:Bounds x="2174" y="72" width="36" height="36"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="db_di" bpmnElement="db"><dc:Bounds x="1460" y="208" width="44" height="44"/></bpmndi:BPMNShape>
+    <bpmndi:BPMNEdge id="Flow_1_di" bpmnElement="Flow_1"><di:waypoint x="222" y="90"/><di:waypoint x="284" y="90"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="Flow_2_di" bpmnElement="Flow_2"><di:waypoint x="408" y="90"/><di:waypoint x="417" y="90"/><di:waypoint x="417" y="230"/><di:waypoint x="426" y="230"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="Flow_3_di" bpmnElement="Flow_3"><di:waypoint x="550" y="230"/><di:waypoint x="607" y="230"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="Flow_4_di" bpmnElement="Flow_4"><di:waypoint x="630" y="253"/><di:waypoint x="630" y="334"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="Flow_5_di" bpmnElement="Flow_5"><di:waypoint x="653" y="230"/><di:waypoint x="749" y="230"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="Flow_6_di" bpmnElement="Flow_6"><di:waypoint x="692" y="370"/><di:waypoint x="727" y="370"/><di:waypoint x="727" y="230"/><di:waypoint x="749" y="230"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="Flow_7_di" bpmnElement="Flow_7"><di:waypoint x="795" y="230"/><di:waypoint x="852" y="230"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="Flow_8_di" bpmnElement="Flow_8"><di:waypoint x="976" y="230"/><di:waypoint x="985" y="230"/><di:waypoint x="985" y="90"/><di:waypoint x="994" y="90"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="Flow_9_di" bpmnElement="Flow_9"><di:waypoint x="1118" y="90"/><di:waypoint x="1127" y="90"/><di:waypoint x="1127" y="510"/><di:waypoint x="1136" y="510"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="Flow_10_di" bpmnElement="Flow_10"><di:waypoint x="1260" y="510"/><di:waypoint x="1317" y="510"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="Flow_11_di" bpmnElement="Flow_11"><di:waypoint x="1340" y="533"/><di:waypoint x="1340" y="650"/><di:waypoint x="1420" y="650"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="Flow_12_di" bpmnElement="Flow_12"><di:waypoint x="1340" y="533"/><di:waypoint x="1340" y="790"/><di:waypoint x="1420" y="790"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="Flow_13_di" bpmnElement="Flow_13"><di:waypoint x="1363" y="510"/><di:waypoint x="1743" y="510"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="Flow_14_di" bpmnElement="Flow_14"><di:waypoint x="1544" y="650"/><di:waypoint x="1562" y="650"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="Flow_15_di" bpmnElement="Flow_15"><di:waypoint x="1544" y="790"/><di:waypoint x="1562" y="790"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="Flow_16_di" bpmnElement="Flow_16"><di:waypoint x="1686" y="650"/><di:waypoint x="1721" y="650"/><di:waypoint x="1721" y="510"/><di:waypoint x="1743" y="510"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="Flow_17_di" bpmnElement="Flow_17"><di:waypoint x="1686" y="790"/><di:waypoint x="1721" y="790"/><di:waypoint x="1721" y="510"/><di:waypoint x="1743" y="510"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="Flow_18_di" bpmnElement="Flow_18"><di:waypoint x="1766" y="533"/><di:waypoint x="1766" y="930"/><di:waypoint x="1846" y="930"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="Flow_19_di" bpmnElement="Flow_19"><di:waypoint x="1970" y="930"/><di:waypoint x="1979" y="930"/><di:waypoint x="1979" y="90"/><di:waypoint x="1988" y="90"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="Flow_20_di" bpmnElement="Flow_20"><di:waypoint x="2112" y="90"/><di:waypoint x="2174" y="90"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="Assoc_1_di" bpmnElement="Assoc_1"><di:waypoint x="976" y="230"/><di:waypoint x="1460" y="230"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="Assoc_2_di" bpmnElement="Assoc_2"><di:waypoint x="1260" y="510"/><di:waypoint x="1460" y="230"/></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="Assoc_3_di" bpmnElement="Assoc_3"><di:waypoint x="1562" y="650"/><di:waypoint x="1504" y="230"/></bpmndi:BPMNEdge>
+  </bpmndi:BPMNPlane></bpmndi:BPMNDiagram>
+</bpmn:definitions>

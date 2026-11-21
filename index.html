@@ -1,0 +1,586 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Solución BPMN – Hospital</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* VOICE: sobrio, académico, como un anexo técnico bien impreso
+   IDEA: cuaderno de planos de procesos
+   PICTURE: los propios diagramas BPMN a ancho completo
+   COLOUR and TYPE: blanco, tinta #121212, rojo #e3120b, pizarra #2e6f8e; Source Serif 4 + Inter
+   LAYOUT: cabecera con pestaña roja, índice, una banda por diagrama, tabla de KPIs */
+:root{color-scheme:light dark;--bg:light-dark(#ffffff,#10191e);--ink:light-dark(#121212,#e9eef1);--mut:light-dark(#4a5560,#9fb0bb);--pan:light-dark(#e3ecf0,#18252c);--red:#e3120b;--sl:light-dark(#2e6f8e,#7db4cf);--rule:light-dark(#d4dde2,#2a3a43)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,sans-serif;overflow-x:clip}
+.band{padding:clamp(24px,3.5vw,52px) max(5vw,16px);border-bottom:1px solid var(--rule);max-width:1600px;margin:auto}
+header .tab{display:inline-block;background:var(--red);color:#fff;font-weight:600;font-size:13px;padding:4px 10px;margin-bottom:14px}
+h1{font:600 clamp(30px,4vw,48px)/1.05 "Source Serif 4",Georgia,serif;margin:0 0 12px;text-wrap:balance}
+h2{font:600 clamp(22px,2.4vw,30px)/1.15 "Source Serif 4",Georgia,serif;margin:0 0 8px}
+p{max-width:70ch;margin:0 0 14px;color:var(--mut)}
+nav{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:14px} nav a{color:var(--sl);font-weight:600;text-decoration:none;border-bottom:2px solid currentColor;padding:6px 0}
+.fig-wrap{background:#fff;border:1px solid var(--rule);border-radius:6px;overflow-x:auto}
+.diagram{min-width:1100px} .diagram svg{display:block;width:100%;height:auto}
+.tools{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:14px 0}
+.btn{font:600 15px Inter,sans-serif;min-height:44px;padding:0 16px;border-radius:6px;border:2px solid var(--sl);background:var(--sl);color:var(--bg);cursor:pointer;display:inline-flex;align-items:center;text-decoration:none}
+.btn.ghost{background:transparent;color:var(--sl)} .btn:focus-visible{outline:3px solid var(--red);outline-offset:2px}
+.hint{font-size:14px;color:var(--mut)}
+details summary{cursor:pointer;color:var(--sl);font-weight:600;min-height:32px}
+pre{overflow-x:auto;max-height:340px;background:var(--pan);padding:12px;font-size:12.5px;border-radius:6px}
+code{overflow-wrap:anywhere}
+table{border-collapse:collapse;width:100%;font-size:15px} th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--rule);vertical-align:top}
+th{font-size:13px;color:var(--mut)} td.m{white-space:nowrap;font-weight:600;color:var(--sl)}
+@media(max-width:600px){table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding-block:10px}.stack td{display:flow-root;border:0;padding:3px 0;padding-inline-start:8em;text-align:start}.stack td::before{content:attr(data-l);float:inline-start;width:7.5em;margin-inline-start:-8em;white-space:normal;color:var(--mut)}}
+</style><script>new MutationObserver(()=>{for(const c of document.querySelectorAll('.stack td:not([data-l])')){let i=0,p=c;while(p=p.previousElementSibling)i+=p.colSpan;c.dataset.l=c.closest('table').rows[0].cells[i]?.textContent||''}}).observe(document,{childList:true,subtree:true})</script></head><body>
+<header class="band"><span class="tab">Gestión de procesos de negocio · Trabajo individual</span>
+<h1>Hospital Regional Inteligente: de cuatro silos a un proceso integrado</h1>
+<p>Repositorio de la solución: tres modelos BPMN 2.0 (desarrollo del software, atención AS-IS y TO-BE) y los indicadores propuestos. Cada modelo se ve aquí y su XML se puede abrir en bpmn.io o Camunda Modeler.</p>
+<nav><a href="Trabajo_BPM_Hospital_Regional_Inteligente.pdf">Informe completo (PDF)</a><a href="#desarrollo">Desarrollo de software</a><a href="#asis">Atención AS-IS</a><a href="#tobe">Atención TO-BE</a><a href="#kpis">KPIs</a></nav></header>
+<section class="band" id="desarrollo"><h2>1. Proceso de desarrollo del producto software (Scrum + DevOps)</h2><p>Modelo de SoftHealth S.A.C. para construir el Sistema Integrado del Hospital (SIH-HRI): requerimientos, sprint, code review, integración continua, QA, review con el cliente, despliegue y retrospectiva.</p>
+<div class="fig-wrap"><div class="diagram"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2172 740" font-family="DejaVu Sans, Arial, sans-serif">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#333"/></marker><marker id="ar2" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,1 L10,5 L0,9" fill="none" stroke="#777"/></marker></defs>
+<rect x="0" y="0" width="2172" height="740" fill="white"/>
+<rect x="20" y="20" width="2132" height="700" fill="none" stroke="#222" stroke-width="1.6"/>
+<line x1="54" y1="20" x2="54" y2="720" stroke="#222" stroke-width="1.2"/>
+<text x="37.0" y="370.0" font-size="14" font-weight="bold" text-anchor="middle" dominant-baseline="middle" transform="rotate(-90 37.0 370.0)">SoftHealth S.A.C. – Desarrollo SIH-HRI</text>
+<rect x="54" y="20" width="2098" height="140" fill="#ffffff" stroke="#555" stroke-width="0.8"/>
+<line x1="84" y1="20" x2="84" y2="160" stroke="#555" stroke-width="0.8"/>
+<text x="69" y="90.0" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="middle" transform="rotate(-90 69 90.0)">Cliente / PO</text>
+<rect x="54" y="160" width="2098" height="140" fill="#fafbfc" stroke="#555" stroke-width="0.8"/>
+<line x1="84" y1="160" x2="84" y2="300" stroke="#555" stroke-width="0.8"/>
+<text x="69" y="230.0" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="middle" transform="rotate(-90 69 230.0)">Scrum Master</text>
+<rect x="54" y="300" width="2098" height="140" fill="#ffffff" stroke="#555" stroke-width="0.8"/>
+<line x1="84" y1="300" x2="84" y2="440" stroke="#555" stroke-width="0.8"/>
+<text x="69" y="370.0" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="middle" transform="rotate(-90 69 370.0)">Desarrollo</text>
+<rect x="54" y="440" width="2098" height="140" fill="#fafbfc" stroke="#555" stroke-width="0.8"/>
+<line x1="84" y1="440" x2="84" y2="580" stroke="#555" stroke-width="0.8"/>
+<text x="69" y="510.0" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="middle" transform="rotate(-90 69 510.0)">QA / Calidad</text>
+<rect x="54" y="580" width="2098" height="140" fill="#ffffff" stroke="#555" stroke-width="0.8"/>
+<line x1="84" y1="580" x2="84" y2="720" stroke="#555" stroke-width="0.8"/>
+<text x="69" y="650.0" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="middle" transform="rotate(-90 69 650.0)">DevOps</text>
+<polyline points="222,90 284,90" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="408,90 426,90" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="550,90 559,90 559,230 568,230" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="630,266 630,334" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="692,370 710,370" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="834,370 891,370" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="914,347 914,312 772,312 772,334" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<text x="919" y="342" font-size="11.5" fill="#b03a2e" font-weight="bold" text-anchor="start">No</text>
+<polyline points="914,393 914,650 994,650" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<text x="919" y="405" font-size="11.5" fill="#b03a2e" font-weight="bold" text-anchor="start">Sí</text>
+<polyline points="1118,650 1127,650 1127,510 1136,510" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="1260,510 1317,510" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="1340,533 1340,568 772,568 772,406" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<text x="1345" y="545" font-size="11.5" fill="#b03a2e" font-weight="bold" text-anchor="start">Sí: corregir</text>
+<polyline points="1340,487 1340,90 1420,90" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<text x="1345" y="482" font-size="11.5" fill="#b03a2e" font-weight="bold" text-anchor="start">No</text>
+<polyline points="1544,90 1601,90" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="1624,67 1624,32 488,32 488,54" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<text x="1629" y="62" font-size="11.5" fill="#b03a2e" font-weight="bold" text-anchor="start">No: ajustar</text>
+<polyline points="1624,113 1624,614" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<text x="1629" y="125" font-size="11.5" fill="#b03a2e" font-weight="bold" text-anchor="start">Sí</text>
+<polyline points="1686,650 1695,650 1695,230 1704,230" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="1828,230 1885,230" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="1908,207 1908,172 630,172 630,194" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<text x="1913" y="202" font-size="11.5" fill="#b03a2e" font-weight="bold" text-anchor="start">Sí: nuevo sprint</text>
+<polyline points="1931,230 2032,230" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<text x="1939" y="225" font-size="11.5" fill="#b03a2e" font-weight="bold" text-anchor="start">No</text>
+<circle cx="204.0" cy="90.0" r="18.0" fill="#e9f7ef" stroke="#222" stroke-width="1.6"/><text x="204" y="117.8" font-size="11" text-anchor="middle" dominant-baseline="middle">Necesidad del</text><text x="204" y="130.2" font-size="11" text-anchor="middle" dominant-baseline="middle">hospital</text>
+<rect x="284.0" y="54.0" width="124" height="72" rx="10" fill="#e8f1fb" stroke="#222" stroke-width="1.4"/><circle cx="295.0" cy="63.0" r="3.5" fill="none" stroke="#333"/><path d="M289.0,73.0 Q295.0,65.0 301.0,73.0 Z" fill="none" stroke="#333"/><text x="350" y="76.5" font-size="11.5" text-anchor="middle" dominant-baseline="middle">Levantar</text><text x="350" y="89.5" font-size="11.5" text-anchor="middle" dominant-baseline="middle">requerimientos</text><text x="350" y="102.5" font-size="11.5" text-anchor="middle" dominant-baseline="middle">(historias de</text><text x="350" y="115.5" font-size="11.5" text-anchor="middle" dominant-baseline="middle">usuario)</text>
+<rect x="426.0" y="54.0" width="124" height="72" rx="10" fill="#e8f1fb" stroke="#222" stroke-width="1.4"/><circle cx="437.0" cy="63.0" r="3.5" fill="none" stroke="#333"/><path d="M431.0,73.0 Q437.0,65.0 443.0,73.0 Z" fill="none" stroke="#333"/><text x="492" y="89.5" font-size="11.5" text-anchor="middle" dominant-baseline="middle">Priorizar Product</text><text x="492" y="102.5" font-size="11.5" text-anchor="middle" dominant-baseline="middle">Backlog</text>
+<rect x="568.0" y="194.0" width="124" height="72" rx="10" fill="#e8f1fb" stroke="#222" stroke-width="1.4"/><circle cx="579.0" cy="203.0" r="3.5" fill="none" stroke="#333"/><path d="M573.0,213.0 Q579.0,205.0 585.0,213.0 Z" fill="none" stroke="#333"/><text x="634" y="223.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">Sprint Planning</text><text x="634" y="236.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">(meta y Sprint</text><text x="634" y="249.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">Backlog)</text>
+<rect x="568.0" y="334.0" width="124" height="72" rx="10" fill="#e8f1fb" stroke="#222" stroke-width="1.4"/><circle cx="579.0" cy="343.0" r="3.5" fill="none" stroke="#333"/><path d="M573.0,353.0 Q579.0,345.0 585.0,353.0 Z" fill="none" stroke="#333"/><text x="634" y="363.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">Diseñar solución</text><text x="634" y="376.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">(UML /</text><text x="634" y="389.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">arquitectura)</text>
+<rect x="710.0" y="334.0" width="124" height="72" rx="10" fill="#e8f1fb" stroke="#222" stroke-width="1.4"/><circle cx="721.0" cy="343.0" r="3.5" fill="none" stroke="#333"/><path d="M715.0,353.0 Q721.0,345.0 727.0,353.0 Z" fill="none" stroke="#333"/><text x="776" y="369.5" font-size="11.5" text-anchor="middle" dominant-baseline="middle">Codificar +</text><text x="776" y="382.5" font-size="11.5" text-anchor="middle" dominant-baseline="middle">pruebas unitarias</text>
+<polygon points="914.0,347.0 937.0,370.0 914.0,393.0 891.0,370.0" fill="#fffbe6" stroke="#222" stroke-width="1.4"/><path d="M907.0,363.0 L921.0,377.0 M921.0,363.0 L907.0,377.0" stroke="#222" stroke-width="3"/><text x="906" y="330.5" font-size="11" font-style="italic" text-anchor="end">¿Code review</text><text x="906" y="343.0" font-size="11" font-style="italic" text-anchor="end">aprobado?</text>
+<rect x="994.0" y="614.0" width="124" height="72" rx="10" fill="#e9f7ef" stroke="#222" stroke-width="1.4"/><circle cx="1006.0" cy="626.0" r="6" fill="none" stroke="#333" stroke-width="2.4" stroke-dasharray="2.2,1.6"/><circle cx="1006.0" cy="626.0" r="2" fill="none" stroke="#333"/><text x="1060" y="636.5" font-size="11.5" text-anchor="middle" dominant-baseline="middle">Integración</text><text x="1060" y="649.5" font-size="11.5" text-anchor="middle" dominant-baseline="middle">continua (build +</text><text x="1060" y="662.5" font-size="11.5" text-anchor="middle" dominant-baseline="middle">tests</text><text x="1060" y="675.5" font-size="11.5" text-anchor="middle" dominant-baseline="middle">automáticos)</text>
+<rect x="1136.0" y="474.0" width="124" height="72" rx="10" fill="#e8f1fb" stroke="#222" stroke-width="1.4"/><circle cx="1147.0" cy="483.0" r="3.5" fill="none" stroke="#333"/><path d="M1141.0,493.0 Q1147.0,485.0 1153.0,493.0 Z" fill="none" stroke="#333"/><text x="1202" y="503.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">Pruebas</text><text x="1202" y="516.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">funcionales y de</text><text x="1202" y="529.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">integración</text>
+<polygon points="1340.0,487.0 1363.0,510.0 1340.0,533.0 1317.0,510.0" fill="#fffbe6" stroke="#222" stroke-width="1.4"/><path d="M1333.0,503.0 L1347.0,517.0 M1347.0,503.0 L1333.0,517.0" stroke="#222" stroke-width="3"/><text x="1332" y="470.5" font-size="11" font-style="italic" text-anchor="end">¿Defectos</text><text x="1332" y="483.0" font-size="11" font-style="italic" text-anchor="end">críticos?</text>
+<rect x="1420.0" y="54.0" width="124" height="72" rx="10" fill="#e8f1fb" stroke="#222" stroke-width="1.4"/><circle cx="1431.0" cy="63.0" r="3.5" fill="none" stroke="#333"/><path d="M1425.0,73.0 Q1431.0,65.0 1437.0,73.0 Z" fill="none" stroke="#333"/><text x="1486" y="83.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">Sprint Review:</text><text x="1486" y="96.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">demo del</text><text x="1486" y="109.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">incremento</text>
+<polygon points="1624.0,67.0 1647.0,90.0 1624.0,113.0 1601.0,90.0" fill="#fffbe6" stroke="#222" stroke-width="1.4"/><path d="M1617.0,83.0 L1631.0,97.0 M1631.0,83.0 L1617.0,97.0" stroke="#222" stroke-width="3"/><text x="1616" y="50.5" font-size="11" font-style="italic" text-anchor="end">¿Incremento</text><text x="1616" y="63.0" font-size="11" font-style="italic" text-anchor="end">aceptado?</text>
+<rect x="1562.0" y="614.0" width="124" height="72" rx="10" fill="#e9f7ef" stroke="#222" stroke-width="1.4"/><circle cx="1574.0" cy="626.0" r="6" fill="none" stroke="#333" stroke-width="2.4" stroke-dasharray="2.2,1.6"/><circle cx="1574.0" cy="626.0" r="2" fill="none" stroke="#333"/><text x="1628" y="649.5" font-size="11.5" text-anchor="middle" dominant-baseline="middle">Desplegar en</text><text x="1628" y="662.5" font-size="11.5" text-anchor="middle" dominant-baseline="middle">producción (CD)</text>
+<rect x="1704.0" y="194.0" width="124" height="72" rx="10" fill="#e8f1fb" stroke="#222" stroke-width="1.4"/><circle cx="1715.0" cy="203.0" r="3.5" fill="none" stroke="#333"/><path d="M1709.0,213.0 Q1715.0,205.0 1721.0,213.0 Z" fill="none" stroke="#333"/><text x="1770" y="223.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">Retrospectiva y</text><text x="1770" y="236.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">acciones de</text><text x="1770" y="249.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">mejora</text>
+<polygon points="1908.0,207.0 1931.0,230.0 1908.0,253.0 1885.0,230.0" fill="#fffbe6" stroke="#222" stroke-width="1.4"/><path d="M1901.0,223.0 L1915.0,237.0 M1915.0,223.0 L1901.0,237.0" stroke="#222" stroke-width="3"/><text x="1900" y="190.5" font-size="11" font-style="italic" text-anchor="end">¿Backlog</text><text x="1900" y="203.0" font-size="11" font-style="italic" text-anchor="end">pendiente?</text>
+<circle cx="2050.0" cy="230.0" r="18.0" fill="#fdecea" stroke="#222" stroke-width="4"/><text x="2050" y="264.0" font-size="11" text-anchor="middle" dominant-baseline="middle">Producto entregado</text>
+</svg></div></div>
+<div class="tools"><button class="btn" data-copy="x-desarrollo">Copiar XML BPMN 2.0</button>
+<a class="btn ghost" href="01_desarrollo_software.bpmn" download>Descargar 01_desarrollo_software.bpmn</a> <a class="btn ghost" href="https://demo.bpmn.io/new">Abrir bpmn.io</a> <span class="hint">Descargue el archivo o copie el XML y guárdelo como <code>01_desarrollo_software.bpmn</code> y arrástrelo a bpmn.io o Camunda Modeler.</span></div>
+<details><summary>Ver XML (01_desarrollo_software.bpmn)</summary><pre id="x-desarrollo">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;bpmn:definitions xmlns:bpmn=&quot;http://www.omg.org/spec/BPMN/20100524/MODEL&quot; xmlns:bpmndi=&quot;http://www.omg.org/spec/BPMN/20100524/DI&quot; xmlns:dc=&quot;http://www.omg.org/spec/DD/20100524/DC&quot; xmlns:di=&quot;http://www.omg.org/spec/DD/20100524/DI&quot; id=&quot;Defs_Proc_DesarrolloSW&quot; targetNamespace=&quot;http://bpmn.io/schema/bpmn&quot; exporter=&quot;Generador académico&quot; exporterVersion=&quot;1.0&quot;&gt;
+  &lt;bpmn:collaboration id=&quot;Collab_Proc_DesarrolloSW&quot;&gt;&lt;bpmn:participant id=&quot;Pool_Proc_DesarrolloSW&quot; name=&quot;SoftHealth S.A.C. – Desarrollo SIH-HRI&quot; processRef=&quot;Proc_DesarrolloSW&quot;/&gt;&lt;/bpmn:collaboration&gt;
+  &lt;bpmn:process id=&quot;Proc_DesarrolloSW&quot; isExecutable=&quot;false&quot;&gt;
+    &lt;bpmn:laneSet id=&quot;LaneSet_1&quot;&gt;
+      &lt;bpmn:lane id=&quot;Lane_cli&quot; name=&quot;Cliente / PO&quot;&gt;
+        &lt;bpmn:flowNodeRef&gt;c0&lt;/bpmn:flowNodeRef&gt;
+        &lt;bpmn:flowNodeRef&gt;c1&lt;/bpmn:flowNodeRef&gt;
+        &lt;bpmn:flowNodeRef&gt;c2&lt;/bpmn:flowNodeRef&gt;
+        &lt;bpmn:flowNodeRef&gt;c3&lt;/bpmn:flowNodeRef&gt;
+        &lt;bpmn:flowNodeRef&gt;g4&lt;/bpmn:flowNodeRef&gt;
+      &lt;/bpmn:lane&gt;
+      &lt;bpmn:lane id=&quot;Lane_sm&quot; name=&quot;Scrum Master&quot;&gt;
+        &lt;bpmn:flowNodeRef&gt;s1&lt;/bpmn:flowNodeRef&gt;
+        &lt;bpmn:flowNodeRef&gt;s2&lt;/bpmn:flowNodeRef&gt;
+        &lt;bpmn:flowNodeRef&gt;g5&lt;/bpmn:flowNodeRef&gt;
+        &lt;bpmn:flowNodeRef&gt;e&lt;/bpmn:flowNodeRef&gt;
+      &lt;/bpmn:lane&gt;
+      &lt;bpmn:lane id=&quot;Lane_dev&quot; name=&quot;Desarrollo&quot;&gt;
+        &lt;bpmn:flowNodeRef&gt;d1&lt;/bpmn:flowNodeRef&gt;
+        &lt;bpmn:flowNodeRef&gt;d2&lt;/bpmn:flowNodeRef&gt;
+        &lt;bpmn:flowNodeRef&gt;g1&lt;/bpmn:flowNodeRef&gt;
+      &lt;/bpmn:lane&gt;
+      &lt;bpmn:lane id=&quot;Lane_qa&quot; name=&quot;QA / Calidad&quot;&gt;
+        &lt;bpmn:flowNodeRef&gt;q1&lt;/bpmn:flowNodeRef&gt;
+        &lt;bpmn:flowNodeRef&gt;g3&lt;/bpmn:flowNodeRef&gt;
+      &lt;/bpmn:lane&gt;
+      &lt;bpmn:lane id=&quot;Lane_ops&quot; name=&quot;DevOps&quot;&gt;
+        &lt;bpmn:flowNodeRef&gt;o1&lt;/bpmn:flowNodeRef&gt;
+        &lt;bpmn:flowNodeRef&gt;o2&lt;/bpmn:flowNodeRef&gt;
+      &lt;/bpmn:lane&gt;
+    &lt;/bpmn:laneSet&gt;
+    &lt;bpmn:startEvent id=&quot;c0&quot; name=&quot;Necesidad del hospital&quot;&gt;&lt;bpmn:outgoing&gt;Flow_1&lt;/bpmn:outgoing&gt;&lt;/bpmn:startEvent&gt;
+    &lt;bpmn:userTask id=&quot;c1&quot; name=&quot;Levantar requerimientos (historias de usuario)&quot;&gt;&lt;bpmn:incoming&gt;Flow_1&lt;/bpmn:incoming&gt;&lt;bpmn:outgoing&gt;Flow_2&lt;/bpmn:outgoing&gt;&lt;/bpmn:userTask&gt;
+    &lt;bpmn:userTask id=&quot;c2&quot; name=&quot;Priorizar Product Backlog&quot;&gt;&lt;bpmn:incoming&gt;Flow_2&lt;/bpmn:incoming&gt;&lt;bpmn:incoming&gt;Flow_14&lt;/bpmn:incoming&gt;&lt;bpmn:outgoing&gt;Flow_3&lt;/bpmn:outgoing&gt;&lt;/bpmn:userTask&gt;
+    &lt;bpmn:userTask id=&quot;s1&quot; name=&quot;Sprint Planning (meta y Sprint Backlog)&quot;&gt;&lt;bpmn:incoming&gt;Flow_3&lt;/bpmn:incoming&gt;&lt;bpmn:incoming&gt;Flow_18&lt;/bpmn:incoming&gt;&lt;bpmn:outgoing&gt;Flow_4&lt;/bpmn:outgoing&gt;&lt;/bpmn:userTask&gt;
+    &lt;bpmn:userTask id=&quot;d1&quot; name=&quot;Diseñar solución (UML / arquitectura)&quot;&gt;&lt;bpmn:incoming&gt;Flow_4&lt;/bpmn:incoming&gt;&lt;bpmn:outgoing&gt;Flow_5&lt;/bpmn:outgoing&gt;&lt;/bpmn:userTask&gt;
+    &lt;bpmn:userTask id=&quot;d2&quot; name=&quot;Codificar + pruebas unitarias&quot;&gt;&lt;bpmn:incoming&gt;Flow_5&lt;/bpmn:incoming&gt;&lt;bpmn:incoming&gt;Flow_7&lt;/bpmn:incoming&gt;&lt;bpmn:incoming&gt;Flow_11&lt;/bpmn:incoming&gt;&lt;bpmn:outgoing&gt;Flow_6&lt;/bpmn:outgoing&gt;&lt;/bpmn:userTask&gt;
+    &lt;bpmn:exclusiveGateway id=&quot;g1&quot; name=&quot;¿Code review aprobado?&quot;&gt;&lt;bpmn:incoming&gt;Flow_6&lt;/bpmn:incoming&gt;&lt;bpmn:outgoing&gt;Flow_7&lt;/bpmn:outgoing&gt;&lt;bpmn:outgoing&gt;Flow_8&lt;/bpmn:outgoing&gt;&lt;/bpmn:exclusiveGateway&gt;
+    &lt;bpmn:serviceTask id=&quot;o1&quot; name=&quot;Integración continua (build + tests automáticos)&quot;&gt;&lt;bpmn:incoming&gt;Flow_8&lt;/bpmn:incoming&gt;&lt;bpmn:outgoing&gt;Flow_9&lt;/bpmn:outgoing&gt;&lt;/bpmn:serviceTask&gt;
+    &lt;bpmn:userTask id=&quot;q1&quot; name=&quot;Pruebas funcionales y de integración&quot;&gt;&lt;bpmn:incoming&gt;Flow_9&lt;/bpmn:incoming&gt;&lt;bpmn:outgoing&gt;Flow_10&lt;/bpmn:outgoing&gt;&lt;/bpmn:userTask&gt;
+    &lt;bpmn:exclusiveGateway id=&quot;g3&quot; name=&quot;¿Defectos críticos?&quot;&gt;&lt;bpmn:incoming&gt;Flow_10&lt;/bpmn:incoming&gt;&lt;bpmn:outgoing&gt;Flow_11&lt;/bpmn:outgoing&gt;&lt;bpmn:outgoing&gt;Flow_12&lt;/bpmn:outgoing&gt;&lt;/bpmn:exclusiveGateway&gt;
+    &lt;bpmn:userTask id=&quot;c3&quot; name=&quot;Sprint Review: demo del incremento&quot;&gt;&lt;bpmn:incoming&gt;Flow_12&lt;/bpmn:incoming&gt;&lt;bpmn:outgoing&gt;Flow_13&lt;/bpmn:outgoing&gt;&lt;/bpmn:userTask&gt;
+    &lt;bpmn:exclusiveGateway id=&quot;g4&quot; name=&quot;¿Incremento aceptado?&quot;&gt;&lt;bpmn:incoming&gt;Flow_13&lt;/bpmn:incoming&gt;&lt;bpmn:outgoing&gt;Flow_14&lt;/bpmn:outgoing&gt;&lt;bpmn:outgoing&gt;Flow_15&lt;/bpmn:outgoing&gt;&lt;/bpmn:exclusiveGateway&gt;
+    &lt;bpmn:serviceTask id=&quot;o2&quot; name=&quot;Desplegar en producción (CD)&quot;&gt;&lt;bpmn:incoming&gt;Flow_15&lt;/bpmn:incoming&gt;&lt;bpmn:outgoing&gt;Flow_16&lt;/bpmn:outgoing&gt;&lt;/bpmn:serviceTask&gt;
+    &lt;bpmn:userTask id=&quot;s2&quot; name=&quot;Retrospectiva y acciones de mejora&quot;&gt;&lt;bpmn:incoming&gt;Flow_16&lt;/bpmn:incoming&gt;&lt;bpmn:outgoing&gt;Flow_17&lt;/bpmn:outgoing&gt;&lt;/bpmn:userTask&gt;
+    &lt;bpmn:exclusiveGateway id=&quot;g5&quot; name=&quot;¿Backlog pendiente?&quot;&gt;&lt;bpmn:incoming&gt;Flow_17&lt;/bpmn:incoming&gt;&lt;bpmn:outgoing&gt;Flow_18&lt;/bpmn:outgoing&gt;&lt;bpmn:outgoing&gt;Flow_19&lt;/bpmn:outgoing&gt;&lt;/bpmn:exclusiveGateway&gt;
+    &lt;bpmn:endEvent id=&quot;e&quot; name=&quot;Producto entregado&quot;&gt;&lt;bpmn:incoming&gt;Flow_19&lt;/bpmn:incoming&gt;&lt;/bpmn:endEvent&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_1&quot; sourceRef=&quot;c0&quot; targetRef=&quot;c1&quot;/&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_2&quot; sourceRef=&quot;c1&quot; targetRef=&quot;c2&quot;/&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_3&quot; sourceRef=&quot;c2&quot; targetRef=&quot;s1&quot;/&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_4&quot; sourceRef=&quot;s1&quot; targetRef=&quot;d1&quot;/&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_5&quot; sourceRef=&quot;d1&quot; targetRef=&quot;d2&quot;/&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_6&quot; sourceRef=&quot;d2&quot; targetRef=&quot;g1&quot;/&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_7&quot; name=&quot;No&quot; sourceRef=&quot;g1&quot; targetRef=&quot;d2&quot;/&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_8&quot; name=&quot;Sí&quot; sourceRef=&quot;g1&quot; targetRef=&quot;o1&quot;/&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_9&quot; sourceRef=&quot;o1&quot; targetRef=&quot;q1&quot;/&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_10&quot; sourceRef=&quot;q1&quot; targetRef=&quot;g3&quot;/&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_11&quot; name=&quot;Sí: corregir&quot; sourceRef=&quot;g3&quot; targetRef=&quot;d2&quot;/&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_12&quot; name=&quot;No&quot; sourceRef=&quot;g3&quot; targetRef=&quot;c3&quot;/&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_13&quot; sourceRef=&quot;c3&quot; targetRef=&quot;g4&quot;/&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_14&quot; name=&quot;No: ajustar&quot; sourceRef=&quot;g4&quot; targetRef=&quot;c2&quot;/&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_15&quot; name=&quot;Sí&quot; sourceRef=&quot;g4&quot; targetRef=&quot;o2&quot;/&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_16&quot; sourceRef=&quot;o2&quot; targetRef=&quot;s2&quot;/&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_17&quot; sourceRef=&quot;s2&quot; targetRef=&quot;g5&quot;/&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_18&quot; name=&quot;Sí: nuevo sprint&quot; sourceRef=&quot;g5&quot; targetRef=&quot;s1&quot;/&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_19&quot; name=&quot;No&quot; sourceRef=&quot;g5&quot; targetRef=&quot;e&quot;/&gt;
+  &lt;/bpmn:process&gt;
+  &lt;bpmndi:BPMNDiagram id=&quot;Diag_Proc_DesarrolloSW&quot;&gt;&lt;bpmndi:BPMNPlane id=&quot;Plane_Proc_DesarrolloSW&quot; bpmnElement=&quot;Collab_Proc_DesarrolloSW&quot;&gt;
+    &lt;bpmndi:BPMNShape id=&quot;Pool_Proc_DesarrolloSW_di&quot; bpmnElement=&quot;Pool_Proc_DesarrolloSW&quot; isHorizontal=&quot;true&quot;&gt;&lt;dc:Bounds x=&quot;20&quot; y=&quot;20&quot; width=&quot;2132&quot; height=&quot;700&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;Lane_cli_di&quot; bpmnElement=&quot;Lane_cli&quot; isHorizontal=&quot;true&quot;&gt;&lt;dc:Bounds x=&quot;50&quot; y=&quot;20&quot; width=&quot;2102&quot; height=&quot;140&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;Lane_sm_di&quot; bpmnElement=&quot;Lane_sm&quot; isHorizontal=&quot;true&quot;&gt;&lt;dc:Bounds x=&quot;50&quot; y=&quot;160&quot; width=&quot;2102&quot; height=&quot;140&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;Lane_dev_di&quot; bpmnElement=&quot;Lane_dev&quot; isHorizontal=&quot;true&quot;&gt;&lt;dc:Bounds x=&quot;50&quot; y=&quot;300&quot; width=&quot;2102&quot; height=&quot;140&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;Lane_qa_di&quot; bpmnElement=&quot;Lane_qa&quot; isHorizontal=&quot;true&quot;&gt;&lt;dc:Bounds x=&quot;50&quot; y=&quot;440&quot; width=&quot;2102&quot; height=&quot;140&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;Lane_ops_di&quot; bpmnElement=&quot;Lane_ops&quot; isHorizontal=&quot;true&quot;&gt;&lt;dc:Bounds x=&quot;50&quot; y=&quot;580&quot; width=&quot;2102&quot; height=&quot;140&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;c0_di&quot; bpmnElement=&quot;c0&quot;&gt;&lt;dc:Bounds x=&quot;186&quot; y=&quot;72&quot; width=&quot;36&quot; height=&quot;36&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;c1_di&quot; bpmnElement=&quot;c1&quot;&gt;&lt;dc:Bounds x=&quot;284&quot; y=&quot;54&quot; width=&quot;124&quot; height=&quot;72&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;c2_di&quot; bpmnElement=&quot;c2&quot;&gt;&lt;dc:Bounds x=&quot;426&quot; y=&quot;54&quot; width=&quot;124&quot; height=&quot;72&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;s1_di&quot; bpmnElement=&quot;s1&quot;&gt;&lt;dc:Bounds x=&quot;568&quot; y=&quot;194&quot; width=&quot;124&quot; height=&quot;72&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;d1_di&quot; bpmnElement=&quot;d1&quot;&gt;&lt;dc:Bounds x=&quot;568&quot; y=&quot;334&quot; width=&quot;124&quot; height=&quot;72&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;d2_di&quot; bpmnElement=&quot;d2&quot;&gt;&lt;dc:Bounds x=&quot;710&quot; y=&quot;334&quot; width=&quot;124&quot; height=&quot;72&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;g1_di&quot; bpmnElement=&quot;g1&quot; isMarkerVisible=&quot;true&quot;&gt;&lt;dc:Bounds x=&quot;891&quot; y=&quot;347&quot; width=&quot;46&quot; height=&quot;46&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;o1_di&quot; bpmnElement=&quot;o1&quot;&gt;&lt;dc:Bounds x=&quot;994&quot; y=&quot;614&quot; width=&quot;124&quot; height=&quot;72&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;q1_di&quot; bpmnElement=&quot;q1&quot;&gt;&lt;dc:Bounds x=&quot;1136&quot; y=&quot;474&quot; width=&quot;124&quot; height=&quot;72&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;g3_di&quot; bpmnElement=&quot;g3&quot; isMarkerVisible=&quot;true&quot;&gt;&lt;dc:Bounds x=&quot;1317&quot; y=&quot;487&quot; width=&quot;46&quot; height=&quot;46&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;c3_di&quot; bpmnElement=&quot;c3&quot;&gt;&lt;dc:Bounds x=&quot;1420&quot; y=&quot;54&quot; width=&quot;124&quot; height=&quot;72&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;g4_di&quot; bpmnElement=&quot;g4&quot; isMarkerVisible=&quot;true&quot;&gt;&lt;dc:Bounds x=&quot;1601&quot; y=&quot;67&quot; width=&quot;46&quot; height=&quot;46&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;o2_di&quot; bpmnElement=&quot;o2&quot;&gt;&lt;dc:Bounds x=&quot;1562&quot; y=&quot;614&quot; width=&quot;124&quot; height=&quot;72&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;s2_di&quot; bpmnElement=&quot;s2&quot;&gt;&lt;dc:Bounds x=&quot;1704&quot; y=&quot;194&quot; width=&quot;124&quot; height=&quot;72&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;g5_di&quot; bpmnElement=&quot;g5&quot; isMarkerVisible=&quot;true&quot;&gt;&lt;dc:Bounds x=&quot;1885&quot; y=&quot;207&quot; width=&quot;46&quot; height=&quot;46&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;e_di&quot; bpmnElement=&quot;e&quot;&gt;&lt;dc:Bounds x=&quot;2032&quot; y=&quot;212&quot; width=&quot;36&quot; height=&quot;36&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_1_di&quot; bpmnElement=&quot;Flow_1&quot;&gt;&lt;di:waypoint x=&quot;222&quot; y=&quot;90&quot;/&gt;&lt;di:waypoint x=&quot;284&quot; y=&quot;90&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_2_di&quot; bpmnElement=&quot;Flow_2&quot;&gt;&lt;di:waypoint x=&quot;408&quot; y=&quot;90&quot;/&gt;&lt;di:waypoint x=&quot;426&quot; y=&quot;90&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_3_di&quot; bpmnElement=&quot;Flow_3&quot;&gt;&lt;di:waypoint x=&quot;550&quot; y=&quot;90&quot;/&gt;&lt;di:waypoint x=&quot;559&quot; y=&quot;90&quot;/&gt;&lt;di:waypoint x=&quot;559&quot; y=&quot;230&quot;/&gt;&lt;di:waypoint x=&quot;568&quot; y=&quot;230&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_4_di&quot; bpmnElement=&quot;Flow_4&quot;&gt;&lt;di:waypoint x=&quot;630&quot; y=&quot;266&quot;/&gt;&lt;di:waypoint x=&quot;630&quot; y=&quot;334&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_5_di&quot; bpmnElement=&quot;Flow_5&quot;&gt;&lt;di:waypoint x=&quot;692&quot; y=&quot;370&quot;/&gt;&lt;di:waypoint x=&quot;710&quot; y=&quot;370&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_6_di&quot; bpmnElement=&quot;Flow_6&quot;&gt;&lt;di:waypoint x=&quot;834&quot; y=&quot;370&quot;/&gt;&lt;di:waypoint x=&quot;891&quot; y=&quot;370&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_7_di&quot; bpmnElement=&quot;Flow_7&quot;&gt;&lt;di:waypoint x=&quot;914&quot; y=&quot;347&quot;/&gt;&lt;di:waypoint x=&quot;914&quot; y=&quot;312&quot;/&gt;&lt;di:waypoint x=&quot;772&quot; y=&quot;312&quot;/&gt;&lt;di:waypoint x=&quot;772&quot; y=&quot;334&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_8_di&quot; bpmnElement=&quot;Flow_8&quot;&gt;&lt;di:waypoint x=&quot;914&quot; y=&quot;393&quot;/&gt;&lt;di:waypoint x=&quot;914&quot; y=&quot;650&quot;/&gt;&lt;di:waypoint x=&quot;994&quot; y=&quot;650&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_9_di&quot; bpmnElement=&quot;Flow_9&quot;&gt;&lt;di:waypoint x=&quot;1118&quot; y=&quot;650&quot;/&gt;&lt;di:waypoint x=&quot;1127&quot; y=&quot;650&quot;/&gt;&lt;di:waypoint x=&quot;1127&quot; y=&quot;510&quot;/&gt;&lt;di:waypoint x=&quot;1136&quot; y=&quot;510&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_10_di&quot; bpmnElement=&quot;Flow_10&quot;&gt;&lt;di:waypoint x=&quot;1260&quot; y=&quot;510&quot;/&gt;&lt;di:waypoint x=&quot;1317&quot; y=&quot;510&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_11_di&quot; bpmnElement=&quot;Flow_11&quot;&gt;&lt;di:waypoint x=&quot;1340&quot; y=&quot;533&quot;/&gt;&lt;di:waypoint x=&quot;1340&quot; y=&quot;568&quot;/&gt;&lt;di:waypoint x=&quot;772&quot; y=&quot;568&quot;/&gt;&lt;di:waypoint x=&quot;772&quot; y=&quot;406&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_12_di&quot; bpmnElement=&quot;Flow_12&quot;&gt;&lt;di:waypoint x=&quot;1340&quot; y=&quot;487&quot;/&gt;&lt;di:waypoint x=&quot;1340&quot; y=&quot;90&quot;/&gt;&lt;di:waypoint x=&quot;1420&quot; y=&quot;90&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_13_di&quot; bpmnElement=&quot;Flow_13&quot;&gt;&lt;di:waypoint x=&quot;1544&quot; y=&quot;90&quot;/&gt;&lt;di:waypoint x=&quot;1601&quot; y=&quot;90&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_14_di&quot; bpmnElement=&quot;Flow_14&quot;&gt;&lt;di:waypoint x=&quot;1624&quot; y=&quot;67&quot;/&gt;&lt;di:waypoint x=&quot;1624&quot; y=&quot;32&quot;/&gt;&lt;di:waypoint x=&quot;488&quot; y=&quot;32&quot;/&gt;&lt;di:waypoint x=&quot;488&quot; y=&quot;54&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_15_di&quot; bpmnElement=&quot;Flow_15&quot;&gt;&lt;di:waypoint x=&quot;1624&quot; y=&quot;113&quot;/&gt;&lt;di:waypoint x=&quot;1624&quot; y=&quot;614&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_16_di&quot; bpmnElement=&quot;Flow_16&quot;&gt;&lt;di:waypoint x=&quot;1686&quot; y=&quot;650&quot;/&gt;&lt;di:waypoint x=&quot;1695&quot; y=&quot;650&quot;/&gt;&lt;di:waypoint x=&quot;1695&quot; y=&quot;230&quot;/&gt;&lt;di:waypoint x=&quot;1704&quot; y=&quot;230&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_17_di&quot; bpmnElement=&quot;Flow_17&quot;&gt;&lt;di:waypoint x=&quot;1828&quot; y=&quot;230&quot;/&gt;&lt;di:waypoint x=&quot;1885&quot; y=&quot;230&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_18_di&quot; bpmnElement=&quot;Flow_18&quot;&gt;&lt;di:waypoint x=&quot;1908&quot; y=&quot;207&quot;/&gt;&lt;di:waypoint x=&quot;1908&quot; y=&quot;172&quot;/&gt;&lt;di:waypoint x=&quot;630&quot; y=&quot;172&quot;/&gt;&lt;di:waypoint x=&quot;630&quot; y=&quot;194&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_19_di&quot; bpmnElement=&quot;Flow_19&quot;&gt;&lt;di:waypoint x=&quot;1931&quot; y=&quot;230&quot;/&gt;&lt;di:waypoint x=&quot;2032&quot; y=&quot;230&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+  &lt;/bpmndi:BPMNPlane&gt;&lt;/bpmndi:BPMNDiagram&gt;
+&lt;/bpmn:definitions&gt;</pre></details></section><section class="band" id="asis"><h2>2. Atención del paciente – situación actual (AS-IS)</h2><p>Cuatro sistemas aislados: el paciente entrega sus datos cuatro veces y transporta papeles entre áreas.</p>
+<div class="fig-wrap"><div class="diagram"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1888 880" font-family="DejaVu Sans, Arial, sans-serif">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#333"/></marker><marker id="ar2" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,1 L10,5 L0,9" fill="none" stroke="#777"/></marker></defs>
+<rect x="0" y="0" width="1888" height="880" fill="white"/>
+<rect x="20" y="20" width="1848" height="840" fill="none" stroke="#222" stroke-width="1.6"/>
+<line x1="54" y1="20" x2="54" y2="860" stroke="#222" stroke-width="1.2"/>
+<text x="37.0" y="440.0" font-size="14" font-weight="bold" text-anchor="middle" dominant-baseline="middle" transform="rotate(-90 37.0 440.0)">Hospital Regional – Atención AS-IS</text>
+<rect x="54" y="20" width="1814" height="140" fill="#ffffff" stroke="#555" stroke-width="0.8"/>
+<line x1="84" y1="20" x2="84" y2="160" stroke="#555" stroke-width="0.8"/>
+<text x="69" y="90.0" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="middle" transform="rotate(-90 69 90.0)">Paciente</text>
+<rect x="54" y="160" width="1814" height="140" fill="#fafbfc" stroke="#555" stroke-width="0.8"/>
+<line x1="84" y1="160" x2="84" y2="300" stroke="#555" stroke-width="0.8"/>
+<text x="69" y="230.0" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="middle" transform="rotate(-90 69 230.0)">Citas (Sistema A)</text>
+<rect x="54" y="300" width="1814" height="140" fill="#ffffff" stroke="#555" stroke-width="0.8"/>
+<line x1="84" y1="300" x2="84" y2="440" stroke="#555" stroke-width="0.8"/>
+<text x="69" y="370.0" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="middle" transform="rotate(-90 69 370.0)">Consultorio</text>
+<rect x="54" y="440" width="1814" height="140" fill="#fafbfc" stroke="#555" stroke-width="0.8"/>
+<line x1="84" y1="440" x2="84" y2="580" stroke="#555" stroke-width="0.8"/>
+<text x="69" y="510.0" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="middle" transform="rotate(-90 69 510.0)">Laboratorio (Sist. B)</text>
+<rect x="54" y="580" width="1814" height="140" fill="#ffffff" stroke="#555" stroke-width="0.8"/>
+<line x1="84" y1="580" x2="84" y2="720" stroke="#555" stroke-width="0.8"/>
+<text x="69" y="650.0" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="middle" transform="rotate(-90 69 650.0)">Farmacia (Sist. C)</text>
+<rect x="54" y="720" width="1814" height="140" fill="#fafbfc" stroke="#555" stroke-width="0.8"/>
+<line x1="84" y1="720" x2="84" y2="860" stroke="#555" stroke-width="0.8"/>
+<text x="69" y="790.0" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="middle" transform="rotate(-90 69 790.0)">Facturación (Sist. D)</text>
+<polyline points="222,90 284,90" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="408,90 417,90 417,230 426,230" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="550,230 568,230" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="692,230 701,230 701,370 710,370" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="834,370 843,370 843,90 852,90" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="914,126 914,474" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="976,510 994,510" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="1118,510 1136,510" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="1260,510 1269,510 1269,90 1278,90" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="1340,126 1340,614" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="1402,650 1420,650" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="1482,686 1482,754" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="1544,790 1562,790" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="1686,790 1726,790 1726,90 1748,90" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<circle cx="204.0" cy="90.0" r="18.0" fill="#e9f7ef" stroke="#222" stroke-width="1.6"/><text x="204" y="124.0" font-size="11" text-anchor="middle" dominant-baseline="middle">Necesita atención</text>
+<rect x="284.0" y="54.0" width="124" height="72" rx="10" fill="#f5f0fb" stroke="#222" stroke-width="1.4"/><path d="M289.0,70.0 L289.0,63.0 L303.0,63.0 M292.0,67.0 L303.0,67.0 M292.0,70.0 L301.0,70.0" stroke="#333" fill="none"/><text x="350" y="83.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">Hacer cola y</text><text x="350" y="96.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">pedir cita en</text><text x="350" y="109.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">ventanilla</text>
+<rect x="426.0" y="194.0" width="124" height="72" rx="10" fill="#e8f1fb" stroke="#222" stroke-width="1.4"/><circle cx="437.0" cy="203.0" r="3.5" fill="none" stroke="#333"/><path d="M431.0,213.0 Q437.0,205.0 443.0,213.0 Z" fill="none" stroke="#333"/><text x="492" y="223.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">Registrar datos</text><text x="492" y="236.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">del paciente (1.ª</text><text x="492" y="249.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">vez)</text>
+<rect x="568.0" y="194.0" width="124" height="72" rx="10" fill="#e8f1fb" stroke="#222" stroke-width="1.4"/><circle cx="579.0" cy="203.0" r="3.5" fill="none" stroke="#333"/><path d="M573.0,213.0 Q579.0,205.0 585.0,213.0 Z" fill="none" stroke="#333"/><text x="634" y="229.5" font-size="11.5" text-anchor="middle" dominant-baseline="middle">Asignar cita</text><text x="634" y="242.5" font-size="11.5" text-anchor="middle" dominant-baseline="middle">manualmente</text>
+<rect x="710.0" y="334.0" width="124" height="72" rx="10" fill="#e8f1fb" stroke="#222" stroke-width="1.4"/><circle cx="721.0" cy="343.0" r="3.5" fill="none" stroke="#333"/><path d="M715.0,353.0 Q721.0,345.0 727.0,353.0 Z" fill="none" stroke="#333"/><text x="776" y="369.5" font-size="11.5" text-anchor="middle" dominant-baseline="middle">Consulta; orden y</text><text x="776" y="382.5" font-size="11.5" text-anchor="middle" dominant-baseline="middle">receta en papel</text>
+<rect x="852.0" y="54.0" width="124" height="72" rx="10" fill="#f5f0fb" stroke="#222" stroke-width="1.4"/><path d="M857.0,70.0 L857.0,63.0 L871.0,63.0 M860.0,67.0 L871.0,67.0 M860.0,70.0 L869.0,70.0" stroke="#333" fill="none"/><text x="918" y="89.5" font-size="11.5" text-anchor="middle" dominant-baseline="middle">Llevar orden al</text><text x="918" y="102.5" font-size="11.5" text-anchor="middle" dominant-baseline="middle">laboratorio</text>
+<rect x="852.0" y="474.0" width="124" height="72" rx="10" fill="#e8f1fb" stroke="#222" stroke-width="1.4"/><circle cx="863.0" cy="483.0" r="3.5" fill="none" stroke="#333"/><path d="M857.0,493.0 Q863.0,485.0 869.0,493.0 Z" fill="none" stroke="#333"/><text x="918" y="503.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">Volver a</text><text x="918" y="516.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">registrar datos</text><text x="918" y="529.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">(2.ª vez)</text>
+<rect x="994.0" y="474.0" width="124" height="72" rx="10" fill="#f5f0fb" stroke="#222" stroke-width="1.4"/><path d="M999.0,490.0 L999.0,483.0 L1013.0,483.0 M1002.0,487.0 L1013.0,487.0 M1002.0,490.0 L1011.0,490.0" stroke="#333" fill="none"/><text x="1060" y="509.5" font-size="11.5" text-anchor="middle" dominant-baseline="middle">Tomar y procesar</text><text x="1060" y="522.5" font-size="11.5" text-anchor="middle" dominant-baseline="middle">muestra</text>
+<rect x="1136.0" y="474.0" width="124" height="72" rx="10" fill="#f5f0fb" stroke="#222" stroke-width="1.4"/><path d="M1141.0,490.0 L1141.0,483.0 L1155.0,483.0 M1144.0,487.0 L1155.0,487.0 M1144.0,490.0 L1153.0,490.0" stroke="#333" fill="none"/><text x="1202" y="503.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">Entregar</text><text x="1202" y="516.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">resultado impreso</text><text x="1202" y="529.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">(2–5 días)</text>
+<rect x="1278.0" y="54.0" width="124" height="72" rx="10" fill="#f5f0fb" stroke="#222" stroke-width="1.4"/><path d="M1283.0,70.0 L1283.0,63.0 L1297.0,63.0 M1286.0,67.0 L1297.0,67.0 M1286.0,70.0 L1295.0,70.0" stroke="#333" fill="none"/><text x="1344" y="89.5" font-size="11.5" text-anchor="middle" dominant-baseline="middle">Llevar receta a</text><text x="1344" y="102.5" font-size="11.5" text-anchor="middle" dominant-baseline="middle">farmacia</text>
+<rect x="1278.0" y="614.0" width="124" height="72" rx="10" fill="#e8f1fb" stroke="#222" stroke-width="1.4"/><circle cx="1289.0" cy="623.0" r="3.5" fill="none" stroke="#333"/><path d="M1283.0,633.0 Q1289.0,625.0 1295.0,633.0 Z" fill="none" stroke="#333"/><text x="1344" y="643.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">Volver a</text><text x="1344" y="656.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">registrar datos</text><text x="1344" y="669.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">(3.ª vez)</text>
+<rect x="1420.0" y="614.0" width="124" height="72" rx="10" fill="#f5f0fb" stroke="#222" stroke-width="1.4"/><path d="M1425.0,630.0 L1425.0,623.0 L1439.0,623.0 M1428.0,627.0 L1439.0,627.0 M1428.0,630.0 L1437.0,630.0" stroke="#333" fill="none"/><text x="1486" y="649.5" font-size="11.5" text-anchor="middle" dominant-baseline="middle">Dispensar sin</text><text x="1486" y="662.5" font-size="11.5" text-anchor="middle" dominant-baseline="middle">stock en línea</text>
+<rect x="1420.0" y="754.0" width="124" height="72" rx="10" fill="#e8f1fb" stroke="#222" stroke-width="1.4"/><circle cx="1431.0" cy="763.0" r="3.5" fill="none" stroke="#333"/><path d="M1425.0,773.0 Q1431.0,765.0 1437.0,773.0 Z" fill="none" stroke="#333"/><text x="1486" y="783.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">Registrar datos y</text><text x="1486" y="796.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">digitar cargos</text><text x="1486" y="809.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">(4.ª vez)</text>
+<rect x="1562.0" y="754.0" width="124" height="72" rx="10" fill="#f5f0fb" stroke="#222" stroke-width="1.4"/><path d="M1567.0,770.0 L1567.0,763.0 L1581.0,763.0 M1570.0,767.0 L1581.0,767.0 M1570.0,770.0 L1579.0,770.0" stroke="#333" fill="none"/><text x="1628" y="789.5" font-size="11.5" text-anchor="middle" dominant-baseline="middle">Cobrar (errores</text><text x="1628" y="802.5" font-size="11.5" text-anchor="middle" dominant-baseline="middle">de facturación)</text>
+<circle cx="1766.0" cy="90.0" r="18.0" fill="#fdecea" stroke="#222" stroke-width="4"/><text x="1766" y="117.8" font-size="11" text-anchor="middle" dominant-baseline="middle">Paciente atendido</text><text x="1766" y="130.2" font-size="11" text-anchor="middle" dominant-baseline="middle">(proceso lento)</text>
+</svg></div></div>
+<div class="tools"><button class="btn" data-copy="x-asis">Copiar XML BPMN 2.0</button>
+<a class="btn ghost" href="02_atencion_paciente_ASIS.bpmn" download>Descargar 02_atencion_paciente_ASIS.bpmn</a> <a class="btn ghost" href="https://demo.bpmn.io/new">Abrir bpmn.io</a> <span class="hint">Descargue el archivo o copie el XML y guárdelo como <code>02_atencion_paciente_ASIS.bpmn</code> y arrástrelo a bpmn.io o Camunda Modeler.</span></div>
+<details><summary>Ver XML (02_atencion_paciente_ASIS.bpmn)</summary><pre id="x-asis">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;bpmn:definitions xmlns:bpmn=&quot;http://www.omg.org/spec/BPMN/20100524/MODEL&quot; xmlns:bpmndi=&quot;http://www.omg.org/spec/BPMN/20100524/DI&quot; xmlns:dc=&quot;http://www.omg.org/spec/DD/20100524/DC&quot; xmlns:di=&quot;http://www.omg.org/spec/DD/20100524/DI&quot; id=&quot;Defs_Proc_AtencionASIS&quot; targetNamespace=&quot;http://bpmn.io/schema/bpmn&quot; exporter=&quot;Generador académico&quot; exporterVersion=&quot;1.0&quot;&gt;
+  &lt;bpmn:collaboration id=&quot;Collab_Proc_AtencionASIS&quot;&gt;&lt;bpmn:participant id=&quot;Pool_Proc_AtencionASIS&quot; name=&quot;Hospital Regional – Atención AS-IS&quot; processRef=&quot;Proc_AtencionASIS&quot;/&gt;&lt;/bpmn:collaboration&gt;
+  &lt;bpmn:process id=&quot;Proc_AtencionASIS&quot; isExecutable=&quot;false&quot;&gt;
+    &lt;bpmn:laneSet id=&quot;LaneSet_1&quot;&gt;
+      &lt;bpmn:lane id=&quot;Lane_pac&quot; name=&quot;Paciente&quot;&gt;
+        &lt;bpmn:flowNodeRef&gt;s&lt;/bpmn:flowNodeRef&gt;
+        &lt;bpmn:flowNodeRef&gt;p1&lt;/bpmn:flowNodeRef&gt;
+        &lt;bpmn:flowNodeRef&gt;p2&lt;/bpmn:flowNodeRef&gt;
+        &lt;bpmn:flowNodeRef&gt;p3&lt;/bpmn:flowNodeRef&gt;
+        &lt;bpmn:flowNodeRef&gt;e&lt;/bpmn:flowNodeRef&gt;
+      &lt;/bpmn:lane&gt;
+      &lt;bpmn:lane id=&quot;Lane_cit&quot; name=&quot;Citas (Sistema A)&quot;&gt;
+        &lt;bpmn:flowNodeRef&gt;c1&lt;/bpmn:flowNodeRef&gt;
+        &lt;bpmn:flowNodeRef&gt;c2&lt;/bpmn:flowNodeRef&gt;
+      &lt;/bpmn:lane&gt;
+      &lt;bpmn:lane id=&quot;Lane_med&quot; name=&quot;Consultorio&quot;&gt;
+        &lt;bpmn:flowNodeRef&gt;m1&lt;/bpmn:flowNodeRef&gt;
+      &lt;/bpmn:lane&gt;
+      &lt;bpmn:lane id=&quot;Lane_lab&quot; name=&quot;Laboratorio (Sist. B)&quot;&gt;
+        &lt;bpmn:flowNodeRef&gt;l1&lt;/bpmn:flowNodeRef&gt;
+        &lt;bpmn:flowNodeRef&gt;l2&lt;/bpmn:flowNodeRef&gt;
+        &lt;bpmn:flowNodeRef&gt;l3&lt;/bpmn:flowNodeRef&gt;
+      &lt;/bpmn:lane&gt;
+      &lt;bpmn:lane id=&quot;Lane_far&quot; name=&quot;Farmacia (Sist. C)&quot;&gt;
+        &lt;bpmn:flowNodeRef&gt;f1&lt;/bpmn:flowNodeRef&gt;
+        &lt;bpmn:flowNodeRef&gt;f2&lt;/bpmn:flowNodeRef&gt;
+      &lt;/bpmn:lane&gt;
+      &lt;bpmn:lane id=&quot;Lane_fac&quot; name=&quot;Facturación (Sist. D)&quot;&gt;
+        &lt;bpmn:flowNodeRef&gt;k1&lt;/bpmn:flowNodeRef&gt;
+        &lt;bpmn:flowNodeRef&gt;k2&lt;/bpmn:flowNodeRef&gt;
+      &lt;/bpmn:lane&gt;
+    &lt;/bpmn:laneSet&gt;
+    &lt;bpmn:startEvent id=&quot;s&quot; name=&quot;Necesita atención&quot;&gt;&lt;bpmn:outgoing&gt;Flow_1&lt;/bpmn:outgoing&gt;&lt;/bpmn:startEvent&gt;
+    &lt;bpmn:manualTask id=&quot;p1&quot; name=&quot;Hacer cola y pedir cita en ventanilla&quot;&gt;&lt;bpmn:incoming&gt;Flow_1&lt;/bpmn:incoming&gt;&lt;bpmn:outgoing&gt;Flow_2&lt;/bpmn:outgoing&gt;&lt;/bpmn:manualTask&gt;
+    &lt;bpmn:userTask id=&quot;c1&quot; name=&quot;Registrar datos del paciente (1.ª vez)&quot;&gt;&lt;bpmn:incoming&gt;Flow_2&lt;/bpmn:incoming&gt;&lt;bpmn:outgoing&gt;Flow_3&lt;/bpmn:outgoing&gt;&lt;/bpmn:userTask&gt;
+    &lt;bpmn:userTask id=&quot;c2&quot; name=&quot;Asignar cita manualmente&quot;&gt;&lt;bpmn:incoming&gt;Flow_3&lt;/bpmn:incoming&gt;&lt;bpmn:outgoing&gt;Flow_4&lt;/bpmn:outgoing&gt;&lt;/bpmn:userTask&gt;
+    &lt;bpmn:userTask id=&quot;m1&quot; name=&quot;Consulta; orden y receta en papel&quot;&gt;&lt;bpmn:incoming&gt;Flow_4&lt;/bpmn:incoming&gt;&lt;bpmn:outgoing&gt;Flow_5&lt;/bpmn:outgoing&gt;&lt;/bpmn:userTask&gt;
+    &lt;bpmn:manualTask id=&quot;p2&quot; name=&quot;Llevar orden al laboratorio&quot;&gt;&lt;bpmn:incoming&gt;Flow_5&lt;/bpmn:incoming&gt;&lt;bpmn:outgoing&gt;Flow_6&lt;/bpmn:outgoing&gt;&lt;/bpmn:manualTask&gt;
+    &lt;bpmn:userTask id=&quot;l1&quot; name=&quot;Volver a registrar datos (2.ª vez)&quot;&gt;&lt;bpmn:incoming&gt;Flow_6&lt;/bpmn:incoming&gt;&lt;bpmn:outgoing&gt;Flow_7&lt;/bpmn:outgoing&gt;&lt;/bpmn:userTask&gt;
+    &lt;bpmn:manualTask id=&quot;l2&quot; name=&quot;Tomar y procesar muestra&quot;&gt;&lt;bpmn:incoming&gt;Flow_7&lt;/bpmn:incoming&gt;&lt;bpmn:outgoing&gt;Flow_8&lt;/bpmn:outgoing&gt;&lt;/bpmn:manualTask&gt;
+    &lt;bpmn:manualTask id=&quot;l3&quot; name=&quot;Entregar resultado impreso (2–5 días)&quot;&gt;&lt;bpmn:incoming&gt;Flow_8&lt;/bpmn:incoming&gt;&lt;bpmn:outgoing&gt;Flow_9&lt;/bpmn:outgoing&gt;&lt;/bpmn:manualTask&gt;
+    &lt;bpmn:manualTask id=&quot;p3&quot; name=&quot;Llevar receta a farmacia&quot;&gt;&lt;bpmn:incoming&gt;Flow_9&lt;/bpmn:incoming&gt;&lt;bpmn:outgoing&gt;Flow_10&lt;/bpmn:outgoing&gt;&lt;/bpmn:manualTask&gt;
+    &lt;bpmn:userTask id=&quot;f1&quot; name=&quot;Volver a registrar datos (3.ª vez)&quot;&gt;&lt;bpmn:incoming&gt;Flow_10&lt;/bpmn:incoming&gt;&lt;bpmn:outgoing&gt;Flow_11&lt;/bpmn:outgoing&gt;&lt;/bpmn:userTask&gt;
+    &lt;bpmn:manualTask id=&quot;f2&quot; name=&quot;Dispensar sin stock en línea&quot;&gt;&lt;bpmn:incoming&gt;Flow_11&lt;/bpmn:incoming&gt;&lt;bpmn:outgoing&gt;Flow_12&lt;/bpmn:outgoing&gt;&lt;/bpmn:manualTask&gt;
+    &lt;bpmn:userTask id=&quot;k1&quot; name=&quot;Registrar datos y digitar cargos (4.ª vez)&quot;&gt;&lt;bpmn:incoming&gt;Flow_12&lt;/bpmn:incoming&gt;&lt;bpmn:outgoing&gt;Flow_13&lt;/bpmn:outgoing&gt;&lt;/bpmn:userTask&gt;
+    &lt;bpmn:manualTask id=&quot;k2&quot; name=&quot;Cobrar (errores de facturación)&quot;&gt;&lt;bpmn:incoming&gt;Flow_13&lt;/bpmn:incoming&gt;&lt;bpmn:outgoing&gt;Flow_14&lt;/bpmn:outgoing&gt;&lt;/bpmn:manualTask&gt;
+    &lt;bpmn:endEvent id=&quot;e&quot; name=&quot;Paciente atendido (proceso lento)&quot;&gt;&lt;bpmn:incoming&gt;Flow_14&lt;/bpmn:incoming&gt;&lt;/bpmn:endEvent&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_1&quot; sourceRef=&quot;s&quot; targetRef=&quot;p1&quot;/&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_2&quot; sourceRef=&quot;p1&quot; targetRef=&quot;c1&quot;/&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_3&quot; sourceRef=&quot;c1&quot; targetRef=&quot;c2&quot;/&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_4&quot; sourceRef=&quot;c2&quot; targetRef=&quot;m1&quot;/&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_5&quot; sourceRef=&quot;m1&quot; targetRef=&quot;p2&quot;/&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_6&quot; sourceRef=&quot;p2&quot; targetRef=&quot;l1&quot;/&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_7&quot; sourceRef=&quot;l1&quot; targetRef=&quot;l2&quot;/&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_8&quot; sourceRef=&quot;l2&quot; targetRef=&quot;l3&quot;/&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_9&quot; sourceRef=&quot;l3&quot; targetRef=&quot;p3&quot;/&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_10&quot; sourceRef=&quot;p3&quot; targetRef=&quot;f1&quot;/&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_11&quot; sourceRef=&quot;f1&quot; targetRef=&quot;f2&quot;/&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_12&quot; sourceRef=&quot;f2&quot; targetRef=&quot;k1&quot;/&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_13&quot; sourceRef=&quot;k1&quot; targetRef=&quot;k2&quot;/&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_14&quot; sourceRef=&quot;k2&quot; targetRef=&quot;e&quot;/&gt;
+  &lt;/bpmn:process&gt;
+  &lt;bpmndi:BPMNDiagram id=&quot;Diag_Proc_AtencionASIS&quot;&gt;&lt;bpmndi:BPMNPlane id=&quot;Plane_Proc_AtencionASIS&quot; bpmnElement=&quot;Collab_Proc_AtencionASIS&quot;&gt;
+    &lt;bpmndi:BPMNShape id=&quot;Pool_Proc_AtencionASIS_di&quot; bpmnElement=&quot;Pool_Proc_AtencionASIS&quot; isHorizontal=&quot;true&quot;&gt;&lt;dc:Bounds x=&quot;20&quot; y=&quot;20&quot; width=&quot;1848&quot; height=&quot;840&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;Lane_pac_di&quot; bpmnElement=&quot;Lane_pac&quot; isHorizontal=&quot;true&quot;&gt;&lt;dc:Bounds x=&quot;50&quot; y=&quot;20&quot; width=&quot;1818&quot; height=&quot;140&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;Lane_cit_di&quot; bpmnElement=&quot;Lane_cit&quot; isHorizontal=&quot;true&quot;&gt;&lt;dc:Bounds x=&quot;50&quot; y=&quot;160&quot; width=&quot;1818&quot; height=&quot;140&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;Lane_med_di&quot; bpmnElement=&quot;Lane_med&quot; isHorizontal=&quot;true&quot;&gt;&lt;dc:Bounds x=&quot;50&quot; y=&quot;300&quot; width=&quot;1818&quot; height=&quot;140&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;Lane_lab_di&quot; bpmnElement=&quot;Lane_lab&quot; isHorizontal=&quot;true&quot;&gt;&lt;dc:Bounds x=&quot;50&quot; y=&quot;440&quot; width=&quot;1818&quot; height=&quot;140&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;Lane_far_di&quot; bpmnElement=&quot;Lane_far&quot; isHorizontal=&quot;true&quot;&gt;&lt;dc:Bounds x=&quot;50&quot; y=&quot;580&quot; width=&quot;1818&quot; height=&quot;140&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;Lane_fac_di&quot; bpmnElement=&quot;Lane_fac&quot; isHorizontal=&quot;true&quot;&gt;&lt;dc:Bounds x=&quot;50&quot; y=&quot;720&quot; width=&quot;1818&quot; height=&quot;140&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;s_di&quot; bpmnElement=&quot;s&quot;&gt;&lt;dc:Bounds x=&quot;186&quot; y=&quot;72&quot; width=&quot;36&quot; height=&quot;36&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;p1_di&quot; bpmnElement=&quot;p1&quot;&gt;&lt;dc:Bounds x=&quot;284&quot; y=&quot;54&quot; width=&quot;124&quot; height=&quot;72&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;c1_di&quot; bpmnElement=&quot;c1&quot;&gt;&lt;dc:Bounds x=&quot;426&quot; y=&quot;194&quot; width=&quot;124&quot; height=&quot;72&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;c2_di&quot; bpmnElement=&quot;c2&quot;&gt;&lt;dc:Bounds x=&quot;568&quot; y=&quot;194&quot; width=&quot;124&quot; height=&quot;72&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;m1_di&quot; bpmnElement=&quot;m1&quot;&gt;&lt;dc:Bounds x=&quot;710&quot; y=&quot;334&quot; width=&quot;124&quot; height=&quot;72&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;p2_di&quot; bpmnElement=&quot;p2&quot;&gt;&lt;dc:Bounds x=&quot;852&quot; y=&quot;54&quot; width=&quot;124&quot; height=&quot;72&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;l1_di&quot; bpmnElement=&quot;l1&quot;&gt;&lt;dc:Bounds x=&quot;852&quot; y=&quot;474&quot; width=&quot;124&quot; height=&quot;72&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;l2_di&quot; bpmnElement=&quot;l2&quot;&gt;&lt;dc:Bounds x=&quot;994&quot; y=&quot;474&quot; width=&quot;124&quot; height=&quot;72&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;l3_di&quot; bpmnElement=&quot;l3&quot;&gt;&lt;dc:Bounds x=&quot;1136&quot; y=&quot;474&quot; width=&quot;124&quot; height=&quot;72&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;p3_di&quot; bpmnElement=&quot;p3&quot;&gt;&lt;dc:Bounds x=&quot;1278&quot; y=&quot;54&quot; width=&quot;124&quot; height=&quot;72&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;f1_di&quot; bpmnElement=&quot;f1&quot;&gt;&lt;dc:Bounds x=&quot;1278&quot; y=&quot;614&quot; width=&quot;124&quot; height=&quot;72&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;f2_di&quot; bpmnElement=&quot;f2&quot;&gt;&lt;dc:Bounds x=&quot;1420&quot; y=&quot;614&quot; width=&quot;124&quot; height=&quot;72&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;k1_di&quot; bpmnElement=&quot;k1&quot;&gt;&lt;dc:Bounds x=&quot;1420&quot; y=&quot;754&quot; width=&quot;124&quot; height=&quot;72&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;k2_di&quot; bpmnElement=&quot;k2&quot;&gt;&lt;dc:Bounds x=&quot;1562&quot; y=&quot;754&quot; width=&quot;124&quot; height=&quot;72&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;e_di&quot; bpmnElement=&quot;e&quot;&gt;&lt;dc:Bounds x=&quot;1748&quot; y=&quot;72&quot; width=&quot;36&quot; height=&quot;36&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_1_di&quot; bpmnElement=&quot;Flow_1&quot;&gt;&lt;di:waypoint x=&quot;222&quot; y=&quot;90&quot;/&gt;&lt;di:waypoint x=&quot;284&quot; y=&quot;90&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_2_di&quot; bpmnElement=&quot;Flow_2&quot;&gt;&lt;di:waypoint x=&quot;408&quot; y=&quot;90&quot;/&gt;&lt;di:waypoint x=&quot;417&quot; y=&quot;90&quot;/&gt;&lt;di:waypoint x=&quot;417&quot; y=&quot;230&quot;/&gt;&lt;di:waypoint x=&quot;426&quot; y=&quot;230&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_3_di&quot; bpmnElement=&quot;Flow_3&quot;&gt;&lt;di:waypoint x=&quot;550&quot; y=&quot;230&quot;/&gt;&lt;di:waypoint x=&quot;568&quot; y=&quot;230&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_4_di&quot; bpmnElement=&quot;Flow_4&quot;&gt;&lt;di:waypoint x=&quot;692&quot; y=&quot;230&quot;/&gt;&lt;di:waypoint x=&quot;701&quot; y=&quot;230&quot;/&gt;&lt;di:waypoint x=&quot;701&quot; y=&quot;370&quot;/&gt;&lt;di:waypoint x=&quot;710&quot; y=&quot;370&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_5_di&quot; bpmnElement=&quot;Flow_5&quot;&gt;&lt;di:waypoint x=&quot;834&quot; y=&quot;370&quot;/&gt;&lt;di:waypoint x=&quot;843&quot; y=&quot;370&quot;/&gt;&lt;di:waypoint x=&quot;843&quot; y=&quot;90&quot;/&gt;&lt;di:waypoint x=&quot;852&quot; y=&quot;90&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_6_di&quot; bpmnElement=&quot;Flow_6&quot;&gt;&lt;di:waypoint x=&quot;914&quot; y=&quot;126&quot;/&gt;&lt;di:waypoint x=&quot;914&quot; y=&quot;474&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_7_di&quot; bpmnElement=&quot;Flow_7&quot;&gt;&lt;di:waypoint x=&quot;976&quot; y=&quot;510&quot;/&gt;&lt;di:waypoint x=&quot;994&quot; y=&quot;510&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_8_di&quot; bpmnElement=&quot;Flow_8&quot;&gt;&lt;di:waypoint x=&quot;1118&quot; y=&quot;510&quot;/&gt;&lt;di:waypoint x=&quot;1136&quot; y=&quot;510&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_9_di&quot; bpmnElement=&quot;Flow_9&quot;&gt;&lt;di:waypoint x=&quot;1260&quot; y=&quot;510&quot;/&gt;&lt;di:waypoint x=&quot;1269&quot; y=&quot;510&quot;/&gt;&lt;di:waypoint x=&quot;1269&quot; y=&quot;90&quot;/&gt;&lt;di:waypoint x=&quot;1278&quot; y=&quot;90&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_10_di&quot; bpmnElement=&quot;Flow_10&quot;&gt;&lt;di:waypoint x=&quot;1340&quot; y=&quot;126&quot;/&gt;&lt;di:waypoint x=&quot;1340&quot; y=&quot;614&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_11_di&quot; bpmnElement=&quot;Flow_11&quot;&gt;&lt;di:waypoint x=&quot;1402&quot; y=&quot;650&quot;/&gt;&lt;di:waypoint x=&quot;1420&quot; y=&quot;650&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_12_di&quot; bpmnElement=&quot;Flow_12&quot;&gt;&lt;di:waypoint x=&quot;1482&quot; y=&quot;686&quot;/&gt;&lt;di:waypoint x=&quot;1482&quot; y=&quot;754&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_13_di&quot; bpmnElement=&quot;Flow_13&quot;&gt;&lt;di:waypoint x=&quot;1544&quot; y=&quot;790&quot;/&gt;&lt;di:waypoint x=&quot;1562&quot; y=&quot;790&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_14_di&quot; bpmnElement=&quot;Flow_14&quot;&gt;&lt;di:waypoint x=&quot;1686&quot; y=&quot;790&quot;/&gt;&lt;di:waypoint x=&quot;1726&quot; y=&quot;790&quot;/&gt;&lt;di:waypoint x=&quot;1726&quot; y=&quot;90&quot;/&gt;&lt;di:waypoint x=&quot;1748&quot; y=&quot;90&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+  &lt;/bpmndi:BPMNPlane&gt;&lt;/bpmndi:BPMNDiagram&gt;
+&lt;/bpmn:definitions&gt;</pre></details></section><section class="band" id="tobe"><h2>3. Atención del paciente – propuesta integrada (TO-BE)</h2><p>Registro único en el índice maestro de pacientes, HCE compartida, órdenes electrónicas, stock en línea (SCM) y factura generada por el ERP.</p>
+<div class="fig-wrap"><div class="diagram"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2314 1020" font-family="DejaVu Sans, Arial, sans-serif">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#333"/></marker><marker id="ar2" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,1 L10,5 L0,9" fill="none" stroke="#777"/></marker></defs>
+<rect x="0" y="0" width="2314" height="1020" fill="white"/>
+<rect x="20" y="20" width="2274" height="980" fill="none" stroke="#222" stroke-width="1.6"/>
+<line x1="54" y1="20" x2="54" y2="1000" stroke="#222" stroke-width="1.2"/>
+<text x="37.0" y="510.0" font-size="14" font-weight="bold" text-anchor="middle" dominant-baseline="middle" transform="rotate(-90 37.0 510.0)">Hospital Regional Inteligente – Atención TO-BE</text>
+<rect x="54" y="20" width="2240" height="140" fill="#ffffff" stroke="#555" stroke-width="0.8"/>
+<line x1="84" y1="20" x2="84" y2="160" stroke="#555" stroke-width="0.8"/>
+<text x="69" y="90.0" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="middle" transform="rotate(-90 69 90.0)">Paciente</text>
+<rect x="54" y="160" width="2240" height="140" fill="#fafbfc" stroke="#555" stroke-width="0.8"/>
+<line x1="84" y1="160" x2="84" y2="300" stroke="#555" stroke-width="0.8"/>
+<text x="69" y="230.0" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="middle" transform="rotate(-90 69 230.0)">Plataforma</text>
+<rect x="54" y="300" width="2240" height="140" fill="#ffffff" stroke="#555" stroke-width="0.8"/>
+<line x1="84" y1="300" x2="84" y2="440" stroke="#555" stroke-width="0.8"/>
+<text x="69" y="370.0" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="middle" transform="rotate(-90 69 370.0)">Admisión</text>
+<rect x="54" y="440" width="2240" height="140" fill="#fafbfc" stroke="#555" stroke-width="0.8"/>
+<line x1="84" y1="440" x2="84" y2="580" stroke="#555" stroke-width="0.8"/>
+<text x="69" y="510.0" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="middle" transform="rotate(-90 69 510.0)">Médico</text>
+<rect x="54" y="580" width="2240" height="140" fill="#ffffff" stroke="#555" stroke-width="0.8"/>
+<line x1="84" y1="580" x2="84" y2="720" stroke="#555" stroke-width="0.8"/>
+<text x="69" y="650.0" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="middle" transform="rotate(-90 69 650.0)">Laboratorio</text>
+<rect x="54" y="720" width="2240" height="140" fill="#fafbfc" stroke="#555" stroke-width="0.8"/>
+<line x1="84" y1="720" x2="84" y2="860" stroke="#555" stroke-width="0.8"/>
+<text x="69" y="790.0" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="middle" transform="rotate(-90 69 790.0)">Farmacia</text>
+<rect x="54" y="860" width="2240" height="140" fill="#ffffff" stroke="#555" stroke-width="0.8"/>
+<line x1="84" y1="860" x2="84" y2="1000" stroke="#555" stroke-width="0.8"/>
+<text x="69" y="930.0" font-size="11.5" font-weight="bold" text-anchor="middle" dominant-baseline="middle" transform="rotate(-90 69 930.0)">Facturación</text>
+<polyline points="976,230 1460,230" fill="none" stroke="#777" stroke-dasharray="4,3" marker-end="url(#ar2)"/>
+<polyline points="1260,510 1460,230" fill="none" stroke="#777" stroke-dasharray="4,3" marker-end="url(#ar2)"/>
+<polyline points="1562,650 1504,230" fill="none" stroke="#777" stroke-dasharray="4,3" marker-end="url(#ar2)"/>
+<polyline points="222,90 284,90" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="408,90 417,90 417,230 426,230" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="550,230 607,230" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="630,253 630,334" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<text x="635" y="265" font-size="11.5" fill="#b03a2e" font-weight="bold" text-anchor="start">No</text>
+<polyline points="653,230 749,230" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<text x="661" y="225" font-size="11.5" fill="#b03a2e" font-weight="bold" text-anchor="start">Sí</text>
+<polyline points="692,370 727,370 727,230 749,230" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="795,230 852,230" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="976,230 985,230 985,90 994,90" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="1118,90 1127,90 1127,510 1136,510" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="1260,510 1317,510" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="1340,533 1340,650 1420,650" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<text x="1348" y="645" font-size="11.5" fill="#b03a2e" font-weight="bold">Análisis</text>
+<polyline points="1340,533 1340,790 1420,790" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<text x="1348" y="785" font-size="11.5" fill="#b03a2e" font-weight="bold">Receta</text>
+<polyline points="1363,510 1743,510" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<text x="1371" y="505" font-size="11.5" fill="#b03a2e" font-weight="bold" text-anchor="start">Solo consulta</text>
+<polyline points="1544,650 1562,650" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="1544,790 1562,790" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="1686,650 1721,650 1721,510 1743,510" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="1686,790 1721,790 1721,510 1743,510" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="1766,533 1766,930 1846,930" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="1970,930 1979,930 1979,90 1988,90" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<polyline points="2112,90 2174,90" fill="none" stroke="#333" stroke-width="1.3" marker-end="url(#ar)"/>
+<circle cx="204.0" cy="90.0" r="18.0" fill="#e9f7ef" stroke="#222" stroke-width="1.6"/><text x="204" y="124.0" font-size="11" text-anchor="middle" dominant-baseline="middle">Requiere atención</text>
+<rect x="284.0" y="54.0" width="124" height="72" rx="10" fill="#e8f1fb" stroke="#222" stroke-width="1.4"/><circle cx="295.0" cy="63.0" r="3.5" fill="none" stroke="#333"/><path d="M289.0,73.0 Q295.0,65.0 301.0,73.0 Z" fill="none" stroke="#333"/><text x="350" y="83.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">Solicitar cita</text><text x="350" y="96.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">(web, app o</text><text x="350" y="109.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">ventanilla)</text>
+<rect x="426.0" y="194.0" width="124" height="72" rx="10" fill="#e9f7ef" stroke="#222" stroke-width="1.4"/><circle cx="438.0" cy="206.0" r="6" fill="none" stroke="#333" stroke-width="2.4" stroke-dasharray="2.2,1.6"/><circle cx="438.0" cy="206.0" r="2" fill="none" stroke="#333"/><text x="492" y="223.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">Validar identidad</text><text x="492" y="236.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">en índice maestro</text><text x="492" y="249.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">(MPI)</text>
+<polygon points="630.0,207.0 653.0,230.0 630.0,253.0 607.0,230.0" fill="#fffbe6" stroke="#222" stroke-width="1.4"/><path d="M623.0,223.0 L637.0,237.0 M637.0,223.0 L623.0,237.0" stroke="#222" stroke-width="3"/><text x="622" y="190.5" font-size="11" font-style="italic" text-anchor="end">¿Paciente</text><text x="622" y="203.0" font-size="11" font-style="italic" text-anchor="end">registrado?</text>
+<rect x="568.0" y="334.0" width="124" height="72" rx="10" fill="#e8f1fb" stroke="#222" stroke-width="1.4"/><circle cx="579.0" cy="343.0" r="3.5" fill="none" stroke="#333"/><path d="M573.0,353.0 Q579.0,345.0 585.0,353.0 Z" fill="none" stroke="#333"/><text x="634" y="363.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">Registrar</text><text x="634" y="376.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">paciente una</text><text x="634" y="389.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">única vez</text>
+<polygon points="772.0,207.0 795.0,230.0 772.0,253.0 749.0,230.0" fill="#fffbe6" stroke="#222" stroke-width="1.4"/><path d="M765.0,223.0 L779.0,237.0 M779.0,223.0 L765.0,237.0" stroke="#222" stroke-width="3"/>
+<rect x="852.0" y="194.0" width="124" height="72" rx="10" fill="#e9f7ef" stroke="#222" stroke-width="1.4"/><circle cx="864.0" cy="206.0" r="6" fill="none" stroke="#333" stroke-width="2.4" stroke-dasharray="2.2,1.6"/><circle cx="864.0" cy="206.0" r="2" fill="none" stroke="#333"/><text x="918" y="223.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">Asignar cita y</text><text x="918" y="236.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">notificar (SMS /</text><text x="918" y="249.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">app)</text>
+<rect x="994.0" y="54.0" width="124" height="72" rx="10" fill="#e8f1fb" stroke="#222" stroke-width="1.4"/><circle cx="1005.0" cy="63.0" r="3.5" fill="none" stroke="#333"/><path d="M999.0,73.0 Q1005.0,65.0 1011.0,73.0 Z" fill="none" stroke="#333"/><text x="1060" y="89.5" font-size="11.5" text-anchor="middle" dominant-baseline="middle">Check-in con QR o</text><text x="1060" y="102.5" font-size="11.5" text-anchor="middle" dominant-baseline="middle">DNI</text>
+<rect x="1136.0" y="474.0" width="124" height="72" rx="10" fill="#e8f1fb" stroke="#222" stroke-width="1.4"/><circle cx="1147.0" cy="483.0" r="3.5" fill="none" stroke="#333"/><path d="M1141.0,493.0 Q1147.0,485.0 1153.0,493.0 Z" fill="none" stroke="#333"/><text x="1202" y="503.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">Atender consulta</text><text x="1202" y="516.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">y registrar en</text><text x="1202" y="529.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">HCE</text>
+<polygon points="1340.0,487.0 1363.0,510.0 1340.0,533.0 1317.0,510.0" fill="#fffbe6" stroke="#222" stroke-width="1.4"/><circle cx="1340.0" cy="510.0" r="9" fill="none" stroke="#222" stroke-width="2.5"/><text x="1332" y="470.5" font-size="11" font-style="italic" text-anchor="end">¿Qué órdenes</text><text x="1332" y="483.0" font-size="11" font-style="italic" text-anchor="end">emite?</text>
+<rect x="1420.0" y="614.0" width="124" height="72" rx="10" fill="#e8f1fb" stroke="#222" stroke-width="1.4"/><circle cx="1431.0" cy="623.0" r="3.5" fill="none" stroke="#333"/><path d="M1425.0,633.0 Q1431.0,625.0 1437.0,633.0 Z" fill="none" stroke="#333"/><text x="1486" y="649.5" font-size="11.5" text-anchor="middle" dominant-baseline="middle">Tomar y procesar</text><text x="1486" y="662.5" font-size="11.5" text-anchor="middle" dominant-baseline="middle">muestra</text>
+<rect x="1562.0" y="614.0" width="124" height="72" rx="10" fill="#e9f7ef" stroke="#222" stroke-width="1.4"/><circle cx="1574.0" cy="626.0" r="6" fill="none" stroke="#333" stroke-width="2.4" stroke-dasharray="2.2,1.6"/><circle cx="1574.0" cy="626.0" r="2" fill="none" stroke="#333"/><text x="1628" y="643.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">Validar, publicar</text><text x="1628" y="656.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">en HCE y</text><text x="1628" y="669.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">notificar</text>
+<rect x="1420.0" y="754.0" width="124" height="72" rx="10" fill="#e9f7ef" stroke="#222" stroke-width="1.4"/><circle cx="1432.0" cy="766.0" r="6" fill="none" stroke="#333" stroke-width="2.4" stroke-dasharray="2.2,1.6"/><circle cx="1432.0" cy="766.0" r="2" fill="none" stroke="#333"/><text x="1486" y="789.5" font-size="11.5" text-anchor="middle" dominant-baseline="middle">Verificar stock y</text><text x="1486" y="802.5" font-size="11.5" text-anchor="middle" dominant-baseline="middle">reservar (SCM)</text>
+<rect x="1562.0" y="754.0" width="124" height="72" rx="10" fill="#e8f1fb" stroke="#222" stroke-width="1.4"/><circle cx="1573.0" cy="763.0" r="3.5" fill="none" stroke="#333"/><path d="M1567.0,773.0 Q1573.0,765.0 1579.0,773.0 Z" fill="none" stroke="#333"/><text x="1628" y="789.5" font-size="11.5" text-anchor="middle" dominant-baseline="middle">Dispensar receta</text><text x="1628" y="802.5" font-size="11.5" text-anchor="middle" dominant-baseline="middle">electrónica</text>
+<polygon points="1766.0,487.0 1789.0,510.0 1766.0,533.0 1743.0,510.0" fill="#fffbe6" stroke="#222" stroke-width="1.4"/><circle cx="1766.0" cy="510.0" r="9" fill="none" stroke="#222" stroke-width="2.5"/>
+<rect x="1846.0" y="894.0" width="124" height="72" rx="10" fill="#e9f7ef" stroke="#222" stroke-width="1.4"/><circle cx="1858.0" cy="906.0" r="6" fill="none" stroke="#333" stroke-width="2.4" stroke-dasharray="2.2,1.6"/><circle cx="1858.0" cy="906.0" r="2" fill="none" stroke="#333"/><text x="1912" y="923.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">Consolidar cargos</text><text x="1912" y="936.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">y emitir factura</text><text x="1912" y="949.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">electrónica (ERP)</text>
+<rect x="1988.0" y="54.0" width="124" height="72" rx="10" fill="#e8f1fb" stroke="#222" stroke-width="1.4"/><circle cx="1999.0" cy="63.0" r="3.5" fill="none" stroke="#333"/><path d="M1993.0,73.0 Q1999.0,65.0 2005.0,73.0 Z" fill="none" stroke="#333"/><text x="2054" y="83.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">Pagar y recibir</text><text x="2054" y="96.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">comprobante</text><text x="2054" y="109.0" font-size="11.5" text-anchor="middle" dominant-baseline="middle">digital</text>
+<circle cx="2192.0" cy="90.0" r="18.0" fill="#fdecea" stroke="#222" stroke-width="4"/><text x="2192" y="117.8" font-size="11" text-anchor="middle" dominant-baseline="middle">Atención</text><text x="2192" y="130.2" font-size="11" text-anchor="middle" dominant-baseline="middle">completada</text>
+<path d="M1460.0,215.0 L1460.0,245.0 A22.0,7 0 0 0 1504.0,245.0 L1504.0,215.0 A22.0,7 0 0 0 1460.0,215.0 A22.0,7 0 0 0 1504.0,215.0" fill="#f4f6f8" stroke="#444"/><text x="1482" y="260.5" font-size="9.5" text-anchor="middle" dominant-baseline="middle">BD única: MPI + HCE</text><text x="1482" y="271.5" font-size="9.5" text-anchor="middle" dominant-baseline="middle">+ ERP</text>
+</svg></div></div>
+<div class="tools"><button class="btn" data-copy="x-tobe">Copiar XML BPMN 2.0</button>
+<a class="btn ghost" href="03_atencion_paciente_TOBE.bpmn" download>Descargar 03_atencion_paciente_TOBE.bpmn</a> <a class="btn ghost" href="https://demo.bpmn.io/new">Abrir bpmn.io</a> <span class="hint">Descargue el archivo o copie el XML y guárdelo como <code>03_atencion_paciente_TOBE.bpmn</code> y arrástrelo a bpmn.io o Camunda Modeler.</span></div>
+<details><summary>Ver XML (03_atencion_paciente_TOBE.bpmn)</summary><pre id="x-tobe">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;bpmn:definitions xmlns:bpmn=&quot;http://www.omg.org/spec/BPMN/20100524/MODEL&quot; xmlns:bpmndi=&quot;http://www.omg.org/spec/BPMN/20100524/DI&quot; xmlns:dc=&quot;http://www.omg.org/spec/DD/20100524/DC&quot; xmlns:di=&quot;http://www.omg.org/spec/DD/20100524/DI&quot; id=&quot;Defs_Proc_AtencionTOBE&quot; targetNamespace=&quot;http://bpmn.io/schema/bpmn&quot; exporter=&quot;Generador académico&quot; exporterVersion=&quot;1.0&quot;&gt;
+  &lt;bpmn:collaboration id=&quot;Collab_Proc_AtencionTOBE&quot;&gt;&lt;bpmn:participant id=&quot;Pool_Proc_AtencionTOBE&quot; name=&quot;Hospital Regional Inteligente – Atención TO-BE&quot; processRef=&quot;Proc_AtencionTOBE&quot;/&gt;&lt;/bpmn:collaboration&gt;
+  &lt;bpmn:process id=&quot;Proc_AtencionTOBE&quot; isExecutable=&quot;false&quot;&gt;
+    &lt;bpmn:laneSet id=&quot;LaneSet_1&quot;&gt;
+      &lt;bpmn:lane id=&quot;Lane_pac&quot; name=&quot;Paciente&quot;&gt;
+        &lt;bpmn:flowNodeRef&gt;s&lt;/bpmn:flowNodeRef&gt;
+        &lt;bpmn:flowNodeRef&gt;p1&lt;/bpmn:flowNodeRef&gt;
+        &lt;bpmn:flowNodeRef&gt;p2&lt;/bpmn:flowNodeRef&gt;
+        &lt;bpmn:flowNodeRef&gt;p3&lt;/bpmn:flowNodeRef&gt;
+        &lt;bpmn:flowNodeRef&gt;e&lt;/bpmn:flowNodeRef&gt;
+      &lt;/bpmn:lane&gt;
+      &lt;bpmn:lane id=&quot;Lane_plat&quot; name=&quot;Plataforma&quot;&gt;
+        &lt;bpmn:flowNodeRef&gt;a1&lt;/bpmn:flowNodeRef&gt;
+        &lt;bpmn:flowNodeRef&gt;g1&lt;/bpmn:flowNodeRef&gt;
+        &lt;bpmn:flowNodeRef&gt;g2&lt;/bpmn:flowNodeRef&gt;
+        &lt;bpmn:flowNodeRef&gt;a2&lt;/bpmn:flowNodeRef&gt;
+      &lt;/bpmn:lane&gt;
+      &lt;bpmn:lane id=&quot;Lane_adm&quot; name=&quot;Admisión&quot;&gt;
+        &lt;bpmn:flowNodeRef&gt;r1&lt;/bpmn:flowNodeRef&gt;
+      &lt;/bpmn:lane&gt;
+      &lt;bpmn:lane id=&quot;Lane_med&quot; name=&quot;Médico&quot;&gt;
+        &lt;bpmn:flowNodeRef&gt;m1&lt;/bpmn:flowNodeRef&gt;
+        &lt;bpmn:flowNodeRef&gt;g3&lt;/bpmn:flowNodeRef&gt;
+        &lt;bpmn:flowNodeRef&gt;g4&lt;/bpmn:flowNodeRef&gt;
+      &lt;/bpmn:lane&gt;
+      &lt;bpmn:lane id=&quot;Lane_lab&quot; name=&quot;Laboratorio&quot;&gt;
+        &lt;bpmn:flowNodeRef&gt;l1&lt;/bpmn:flowNodeRef&gt;
+        &lt;bpmn:flowNodeRef&gt;l2&lt;/bpmn:flowNodeRef&gt;
+      &lt;/bpmn:lane&gt;
+      &lt;bpmn:lane id=&quot;Lane_far&quot; name=&quot;Farmacia&quot;&gt;
+        &lt;bpmn:flowNodeRef&gt;f1&lt;/bpmn:flowNodeRef&gt;
+        &lt;bpmn:flowNodeRef&gt;f2&lt;/bpmn:flowNodeRef&gt;
+      &lt;/bpmn:lane&gt;
+      &lt;bpmn:lane id=&quot;Lane_fac&quot; name=&quot;Facturación&quot;&gt;
+        &lt;bpmn:flowNodeRef&gt;k1&lt;/bpmn:flowNodeRef&gt;
+      &lt;/bpmn:lane&gt;
+    &lt;/bpmn:laneSet&gt;
+    &lt;bpmn:startEvent id=&quot;s&quot; name=&quot;Requiere atención&quot;&gt;&lt;bpmn:outgoing&gt;Flow_1&lt;/bpmn:outgoing&gt;&lt;/bpmn:startEvent&gt;
+    &lt;bpmn:userTask id=&quot;p1&quot; name=&quot;Solicitar cita (web, app o ventanilla)&quot;&gt;&lt;bpmn:incoming&gt;Flow_1&lt;/bpmn:incoming&gt;&lt;bpmn:outgoing&gt;Flow_2&lt;/bpmn:outgoing&gt;&lt;/bpmn:userTask&gt;
+    &lt;bpmn:serviceTask id=&quot;a1&quot; name=&quot;Validar identidad en índice maestro (MPI)&quot;&gt;&lt;bpmn:incoming&gt;Flow_2&lt;/bpmn:incoming&gt;&lt;bpmn:outgoing&gt;Flow_3&lt;/bpmn:outgoing&gt;&lt;/bpmn:serviceTask&gt;
+    &lt;bpmn:exclusiveGateway id=&quot;g1&quot; name=&quot;¿Paciente registrado?&quot;&gt;&lt;bpmn:incoming&gt;Flow_3&lt;/bpmn:incoming&gt;&lt;bpmn:outgoing&gt;Flow_4&lt;/bpmn:outgoing&gt;&lt;bpmn:outgoing&gt;Flow_5&lt;/bpmn:outgoing&gt;&lt;/bpmn:exclusiveGateway&gt;
+    &lt;bpmn:userTask id=&quot;r1&quot; name=&quot;Registrar paciente una única vez&quot;&gt;&lt;bpmn:incoming&gt;Flow_4&lt;/bpmn:incoming&gt;&lt;bpmn:outgoing&gt;Flow_6&lt;/bpmn:outgoing&gt;&lt;/bpmn:userTask&gt;
+    &lt;bpmn:exclusiveGateway id=&quot;g2&quot; name=&quot;&quot;&gt;&lt;bpmn:incoming&gt;Flow_5&lt;/bpmn:incoming&gt;&lt;bpmn:incoming&gt;Flow_6&lt;/bpmn:incoming&gt;&lt;bpmn:outgoing&gt;Flow_7&lt;/bpmn:outgoing&gt;&lt;/bpmn:exclusiveGateway&gt;
+    &lt;bpmn:serviceTask id=&quot;a2&quot; name=&quot;Asignar cita y notificar (SMS / app)&quot;&gt;&lt;bpmn:incoming&gt;Flow_7&lt;/bpmn:incoming&gt;&lt;bpmn:outgoing&gt;Flow_8&lt;/bpmn:outgoing&gt;&lt;bpmn:dataOutputAssociation id=&quot;Assoc_1&quot;&gt;&lt;bpmn:targetRef&gt;db&lt;/bpmn:targetRef&gt;&lt;/bpmn:dataOutputAssociation&gt;&lt;/bpmn:serviceTask&gt;
+    &lt;bpmn:userTask id=&quot;p2&quot; name=&quot;Check-in con QR o DNI&quot;&gt;&lt;bpmn:incoming&gt;Flow_8&lt;/bpmn:incoming&gt;&lt;bpmn:outgoing&gt;Flow_9&lt;/bpmn:outgoing&gt;&lt;/bpmn:userTask&gt;
+    &lt;bpmn:userTask id=&quot;m1&quot; name=&quot;Atender consulta y registrar en HCE&quot;&gt;&lt;bpmn:incoming&gt;Flow_9&lt;/bpmn:incoming&gt;&lt;bpmn:outgoing&gt;Flow_10&lt;/bpmn:outgoing&gt;&lt;bpmn:dataOutputAssociation id=&quot;Assoc_2&quot;&gt;&lt;bpmn:targetRef&gt;db&lt;/bpmn:targetRef&gt;&lt;/bpmn:dataOutputAssociation&gt;&lt;/bpmn:userTask&gt;
+    &lt;bpmn:inclusiveGateway id=&quot;g3&quot; name=&quot;¿Qué órdenes emite?&quot;&gt;&lt;bpmn:incoming&gt;Flow_10&lt;/bpmn:incoming&gt;&lt;bpmn:outgoing&gt;Flow_11&lt;/bpmn:outgoing&gt;&lt;bpmn:outgoing&gt;Flow_12&lt;/bpmn:outgoing&gt;&lt;bpmn:outgoing&gt;Flow_13&lt;/bpmn:outgoing&gt;&lt;/bpmn:inclusiveGateway&gt;
+    &lt;bpmn:userTask id=&quot;l1&quot; name=&quot;Tomar y procesar muestra&quot;&gt;&lt;bpmn:incoming&gt;Flow_11&lt;/bpmn:incoming&gt;&lt;bpmn:outgoing&gt;Flow_14&lt;/bpmn:outgoing&gt;&lt;/bpmn:userTask&gt;
+    &lt;bpmn:serviceTask id=&quot;l2&quot; name=&quot;Validar, publicar en HCE y notificar&quot;&gt;&lt;bpmn:incoming&gt;Flow_14&lt;/bpmn:incoming&gt;&lt;bpmn:outgoing&gt;Flow_16&lt;/bpmn:outgoing&gt;&lt;bpmn:dataOutputAssociation id=&quot;Assoc_3&quot;&gt;&lt;bpmn:targetRef&gt;db&lt;/bpmn:targetRef&gt;&lt;/bpmn:dataOutputAssociation&gt;&lt;/bpmn:serviceTask&gt;
+    &lt;bpmn:serviceTask id=&quot;f1&quot; name=&quot;Verificar stock y reservar (SCM)&quot;&gt;&lt;bpmn:incoming&gt;Flow_12&lt;/bpmn:incoming&gt;&lt;bpmn:outgoing&gt;Flow_15&lt;/bpmn:outgoing&gt;&lt;/bpmn:serviceTask&gt;
+    &lt;bpmn:userTask id=&quot;f2&quot; name=&quot;Dispensar receta electrónica&quot;&gt;&lt;bpmn:incoming&gt;Flow_15&lt;/bpmn:incoming&gt;&lt;bpmn:outgoing&gt;Flow_17&lt;/bpmn:outgoing&gt;&lt;/bpmn:userTask&gt;
+    &lt;bpmn:inclusiveGateway id=&quot;g4&quot; name=&quot;&quot;&gt;&lt;bpmn:incoming&gt;Flow_13&lt;/bpmn:incoming&gt;&lt;bpmn:incoming&gt;Flow_16&lt;/bpmn:incoming&gt;&lt;bpmn:incoming&gt;Flow_17&lt;/bpmn:incoming&gt;&lt;bpmn:outgoing&gt;Flow_18&lt;/bpmn:outgoing&gt;&lt;/bpmn:inclusiveGateway&gt;
+    &lt;bpmn:serviceTask id=&quot;k1&quot; name=&quot;Consolidar cargos y emitir factura electrónica (ERP)&quot;&gt;&lt;bpmn:incoming&gt;Flow_18&lt;/bpmn:incoming&gt;&lt;bpmn:outgoing&gt;Flow_19&lt;/bpmn:outgoing&gt;&lt;/bpmn:serviceTask&gt;
+    &lt;bpmn:userTask id=&quot;p3&quot; name=&quot;Pagar y recibir comprobante digital&quot;&gt;&lt;bpmn:incoming&gt;Flow_19&lt;/bpmn:incoming&gt;&lt;bpmn:outgoing&gt;Flow_20&lt;/bpmn:outgoing&gt;&lt;/bpmn:userTask&gt;
+    &lt;bpmn:endEvent id=&quot;e&quot; name=&quot;Atención completada&quot;&gt;&lt;bpmn:incoming&gt;Flow_20&lt;/bpmn:incoming&gt;&lt;/bpmn:endEvent&gt;
+    &lt;bpmn:dataStoreReference id=&quot;db&quot; name=&quot;BD única: MPI + HCE + ERP&quot;/&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_1&quot; sourceRef=&quot;s&quot; targetRef=&quot;p1&quot;/&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_2&quot; sourceRef=&quot;p1&quot; targetRef=&quot;a1&quot;/&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_3&quot; sourceRef=&quot;a1&quot; targetRef=&quot;g1&quot;/&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_4&quot; name=&quot;No&quot; sourceRef=&quot;g1&quot; targetRef=&quot;r1&quot;/&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_5&quot; name=&quot;Sí&quot; sourceRef=&quot;g1&quot; targetRef=&quot;g2&quot;/&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_6&quot; sourceRef=&quot;r1&quot; targetRef=&quot;g2&quot;/&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_7&quot; sourceRef=&quot;g2&quot; targetRef=&quot;a2&quot;/&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_8&quot; sourceRef=&quot;a2&quot; targetRef=&quot;p2&quot;/&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_9&quot; sourceRef=&quot;p2&quot; targetRef=&quot;m1&quot;/&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_10&quot; sourceRef=&quot;m1&quot; targetRef=&quot;g3&quot;/&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_11&quot; name=&quot;Análisis&quot; sourceRef=&quot;g3&quot; targetRef=&quot;l1&quot;/&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_12&quot; name=&quot;Receta&quot; sourceRef=&quot;g3&quot; targetRef=&quot;f1&quot;/&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_13&quot; name=&quot;Solo consulta&quot; sourceRef=&quot;g3&quot; targetRef=&quot;g4&quot;/&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_14&quot; sourceRef=&quot;l1&quot; targetRef=&quot;l2&quot;/&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_15&quot; sourceRef=&quot;f1&quot; targetRef=&quot;f2&quot;/&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_16&quot; sourceRef=&quot;l2&quot; targetRef=&quot;g4&quot;/&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_17&quot; sourceRef=&quot;f2&quot; targetRef=&quot;g4&quot;/&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_18&quot; sourceRef=&quot;g4&quot; targetRef=&quot;k1&quot;/&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_19&quot; sourceRef=&quot;k1&quot; targetRef=&quot;p3&quot;/&gt;
+    &lt;bpmn:sequenceFlow id=&quot;Flow_20&quot; sourceRef=&quot;p3&quot; targetRef=&quot;e&quot;/&gt;
+  &lt;/bpmn:process&gt;
+  &lt;bpmndi:BPMNDiagram id=&quot;Diag_Proc_AtencionTOBE&quot;&gt;&lt;bpmndi:BPMNPlane id=&quot;Plane_Proc_AtencionTOBE&quot; bpmnElement=&quot;Collab_Proc_AtencionTOBE&quot;&gt;
+    &lt;bpmndi:BPMNShape id=&quot;Pool_Proc_AtencionTOBE_di&quot; bpmnElement=&quot;Pool_Proc_AtencionTOBE&quot; isHorizontal=&quot;true&quot;&gt;&lt;dc:Bounds x=&quot;20&quot; y=&quot;20&quot; width=&quot;2274&quot; height=&quot;980&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;Lane_pac_di&quot; bpmnElement=&quot;Lane_pac&quot; isHorizontal=&quot;true&quot;&gt;&lt;dc:Bounds x=&quot;50&quot; y=&quot;20&quot; width=&quot;2244&quot; height=&quot;140&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;Lane_plat_di&quot; bpmnElement=&quot;Lane_plat&quot; isHorizontal=&quot;true&quot;&gt;&lt;dc:Bounds x=&quot;50&quot; y=&quot;160&quot; width=&quot;2244&quot; height=&quot;140&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;Lane_adm_di&quot; bpmnElement=&quot;Lane_adm&quot; isHorizontal=&quot;true&quot;&gt;&lt;dc:Bounds x=&quot;50&quot; y=&quot;300&quot; width=&quot;2244&quot; height=&quot;140&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;Lane_med_di&quot; bpmnElement=&quot;Lane_med&quot; isHorizontal=&quot;true&quot;&gt;&lt;dc:Bounds x=&quot;50&quot; y=&quot;440&quot; width=&quot;2244&quot; height=&quot;140&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;Lane_lab_di&quot; bpmnElement=&quot;Lane_lab&quot; isHorizontal=&quot;true&quot;&gt;&lt;dc:Bounds x=&quot;50&quot; y=&quot;580&quot; width=&quot;2244&quot; height=&quot;140&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;Lane_far_di&quot; bpmnElement=&quot;Lane_far&quot; isHorizontal=&quot;true&quot;&gt;&lt;dc:Bounds x=&quot;50&quot; y=&quot;720&quot; width=&quot;2244&quot; height=&quot;140&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;Lane_fac_di&quot; bpmnElement=&quot;Lane_fac&quot; isHorizontal=&quot;true&quot;&gt;&lt;dc:Bounds x=&quot;50&quot; y=&quot;860&quot; width=&quot;2244&quot; height=&quot;140&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;s_di&quot; bpmnElement=&quot;s&quot;&gt;&lt;dc:Bounds x=&quot;186&quot; y=&quot;72&quot; width=&quot;36&quot; height=&quot;36&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;p1_di&quot; bpmnElement=&quot;p1&quot;&gt;&lt;dc:Bounds x=&quot;284&quot; y=&quot;54&quot; width=&quot;124&quot; height=&quot;72&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;a1_di&quot; bpmnElement=&quot;a1&quot;&gt;&lt;dc:Bounds x=&quot;426&quot; y=&quot;194&quot; width=&quot;124&quot; height=&quot;72&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;g1_di&quot; bpmnElement=&quot;g1&quot; isMarkerVisible=&quot;true&quot;&gt;&lt;dc:Bounds x=&quot;607&quot; y=&quot;207&quot; width=&quot;46&quot; height=&quot;46&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;r1_di&quot; bpmnElement=&quot;r1&quot;&gt;&lt;dc:Bounds x=&quot;568&quot; y=&quot;334&quot; width=&quot;124&quot; height=&quot;72&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;g2_di&quot; bpmnElement=&quot;g2&quot; isMarkerVisible=&quot;true&quot;&gt;&lt;dc:Bounds x=&quot;749&quot; y=&quot;207&quot; width=&quot;46&quot; height=&quot;46&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;a2_di&quot; bpmnElement=&quot;a2&quot;&gt;&lt;dc:Bounds x=&quot;852&quot; y=&quot;194&quot; width=&quot;124&quot; height=&quot;72&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;p2_di&quot; bpmnElement=&quot;p2&quot;&gt;&lt;dc:Bounds x=&quot;994&quot; y=&quot;54&quot; width=&quot;124&quot; height=&quot;72&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;m1_di&quot; bpmnElement=&quot;m1&quot;&gt;&lt;dc:Bounds x=&quot;1136&quot; y=&quot;474&quot; width=&quot;124&quot; height=&quot;72&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;g3_di&quot; bpmnElement=&quot;g3&quot;&gt;&lt;dc:Bounds x=&quot;1317&quot; y=&quot;487&quot; width=&quot;46&quot; height=&quot;46&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;l1_di&quot; bpmnElement=&quot;l1&quot;&gt;&lt;dc:Bounds x=&quot;1420&quot; y=&quot;614&quot; width=&quot;124&quot; height=&quot;72&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;l2_di&quot; bpmnElement=&quot;l2&quot;&gt;&lt;dc:Bounds x=&quot;1562&quot; y=&quot;614&quot; width=&quot;124&quot; height=&quot;72&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;f1_di&quot; bpmnElement=&quot;f1&quot;&gt;&lt;dc:Bounds x=&quot;1420&quot; y=&quot;754&quot; width=&quot;124&quot; height=&quot;72&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;f2_di&quot; bpmnElement=&quot;f2&quot;&gt;&lt;dc:Bounds x=&quot;1562&quot; y=&quot;754&quot; width=&quot;124&quot; height=&quot;72&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;g4_di&quot; bpmnElement=&quot;g4&quot;&gt;&lt;dc:Bounds x=&quot;1743&quot; y=&quot;487&quot; width=&quot;46&quot; height=&quot;46&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;k1_di&quot; bpmnElement=&quot;k1&quot;&gt;&lt;dc:Bounds x=&quot;1846&quot; y=&quot;894&quot; width=&quot;124&quot; height=&quot;72&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;p3_di&quot; bpmnElement=&quot;p3&quot;&gt;&lt;dc:Bounds x=&quot;1988&quot; y=&quot;54&quot; width=&quot;124&quot; height=&quot;72&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;e_di&quot; bpmnElement=&quot;e&quot;&gt;&lt;dc:Bounds x=&quot;2174&quot; y=&quot;72&quot; width=&quot;36&quot; height=&quot;36&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNShape id=&quot;db_di&quot; bpmnElement=&quot;db&quot;&gt;&lt;dc:Bounds x=&quot;1460&quot; y=&quot;208&quot; width=&quot;44&quot; height=&quot;44&quot;/&gt;&lt;/bpmndi:BPMNShape&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_1_di&quot; bpmnElement=&quot;Flow_1&quot;&gt;&lt;di:waypoint x=&quot;222&quot; y=&quot;90&quot;/&gt;&lt;di:waypoint x=&quot;284&quot; y=&quot;90&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_2_di&quot; bpmnElement=&quot;Flow_2&quot;&gt;&lt;di:waypoint x=&quot;408&quot; y=&quot;90&quot;/&gt;&lt;di:waypoint x=&quot;417&quot; y=&quot;90&quot;/&gt;&lt;di:waypoint x=&quot;417&quot; y=&quot;230&quot;/&gt;&lt;di:waypoint x=&quot;426&quot; y=&quot;230&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_3_di&quot; bpmnElement=&quot;Flow_3&quot;&gt;&lt;di:waypoint x=&quot;550&quot; y=&quot;230&quot;/&gt;&lt;di:waypoint x=&quot;607&quot; y=&quot;230&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_4_di&quot; bpmnElement=&quot;Flow_4&quot;&gt;&lt;di:waypoint x=&quot;630&quot; y=&quot;253&quot;/&gt;&lt;di:waypoint x=&quot;630&quot; y=&quot;334&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_5_di&quot; bpmnElement=&quot;Flow_5&quot;&gt;&lt;di:waypoint x=&quot;653&quot; y=&quot;230&quot;/&gt;&lt;di:waypoint x=&quot;749&quot; y=&quot;230&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_6_di&quot; bpmnElement=&quot;Flow_6&quot;&gt;&lt;di:waypoint x=&quot;692&quot; y=&quot;370&quot;/&gt;&lt;di:waypoint x=&quot;727&quot; y=&quot;370&quot;/&gt;&lt;di:waypoint x=&quot;727&quot; y=&quot;230&quot;/&gt;&lt;di:waypoint x=&quot;749&quot; y=&quot;230&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_7_di&quot; bpmnElement=&quot;Flow_7&quot;&gt;&lt;di:waypoint x=&quot;795&quot; y=&quot;230&quot;/&gt;&lt;di:waypoint x=&quot;852&quot; y=&quot;230&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_8_di&quot; bpmnElement=&quot;Flow_8&quot;&gt;&lt;di:waypoint x=&quot;976&quot; y=&quot;230&quot;/&gt;&lt;di:waypoint x=&quot;985&quot; y=&quot;230&quot;/&gt;&lt;di:waypoint x=&quot;985&quot; y=&quot;90&quot;/&gt;&lt;di:waypoint x=&quot;994&quot; y=&quot;90&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_9_di&quot; bpmnElement=&quot;Flow_9&quot;&gt;&lt;di:waypoint x=&quot;1118&quot; y=&quot;90&quot;/&gt;&lt;di:waypoint x=&quot;1127&quot; y=&quot;90&quot;/&gt;&lt;di:waypoint x=&quot;1127&quot; y=&quot;510&quot;/&gt;&lt;di:waypoint x=&quot;1136&quot; y=&quot;510&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_10_di&quot; bpmnElement=&quot;Flow_10&quot;&gt;&lt;di:waypoint x=&quot;1260&quot; y=&quot;510&quot;/&gt;&lt;di:waypoint x=&quot;1317&quot; y=&quot;510&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_11_di&quot; bpmnElement=&quot;Flow_11&quot;&gt;&lt;di:waypoint x=&quot;1340&quot; y=&quot;533&quot;/&gt;&lt;di:waypoint x=&quot;1340&quot; y=&quot;650&quot;/&gt;&lt;di:waypoint x=&quot;1420&quot; y=&quot;650&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_12_di&quot; bpmnElement=&quot;Flow_12&quot;&gt;&lt;di:waypoint x=&quot;1340&quot; y=&quot;533&quot;/&gt;&lt;di:waypoint x=&quot;1340&quot; y=&quot;790&quot;/&gt;&lt;di:waypoint x=&quot;1420&quot; y=&quot;790&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_13_di&quot; bpmnElement=&quot;Flow_13&quot;&gt;&lt;di:waypoint x=&quot;1363&quot; y=&quot;510&quot;/&gt;&lt;di:waypoint x=&quot;1743&quot; y=&quot;510&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_14_di&quot; bpmnElement=&quot;Flow_14&quot;&gt;&lt;di:waypoint x=&quot;1544&quot; y=&quot;650&quot;/&gt;&lt;di:waypoint x=&quot;1562&quot; y=&quot;650&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_15_di&quot; bpmnElement=&quot;Flow_15&quot;&gt;&lt;di:waypoint x=&quot;1544&quot; y=&quot;790&quot;/&gt;&lt;di:waypoint x=&quot;1562&quot; y=&quot;790&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_16_di&quot; bpmnElement=&quot;Flow_16&quot;&gt;&lt;di:waypoint x=&quot;1686&quot; y=&quot;650&quot;/&gt;&lt;di:waypoint x=&quot;1721&quot; y=&quot;650&quot;/&gt;&lt;di:waypoint x=&quot;1721&quot; y=&quot;510&quot;/&gt;&lt;di:waypoint x=&quot;1743&quot; y=&quot;510&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_17_di&quot; bpmnElement=&quot;Flow_17&quot;&gt;&lt;di:waypoint x=&quot;1686&quot; y=&quot;790&quot;/&gt;&lt;di:waypoint x=&quot;1721&quot; y=&quot;790&quot;/&gt;&lt;di:waypoint x=&quot;1721&quot; y=&quot;510&quot;/&gt;&lt;di:waypoint x=&quot;1743&quot; y=&quot;510&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_18_di&quot; bpmnElement=&quot;Flow_18&quot;&gt;&lt;di:waypoint x=&quot;1766&quot; y=&quot;533&quot;/&gt;&lt;di:waypoint x=&quot;1766&quot; y=&quot;930&quot;/&gt;&lt;di:waypoint x=&quot;1846&quot; y=&quot;930&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_19_di&quot; bpmnElement=&quot;Flow_19&quot;&gt;&lt;di:waypoint x=&quot;1970&quot; y=&quot;930&quot;/&gt;&lt;di:waypoint x=&quot;1979&quot; y=&quot;930&quot;/&gt;&lt;di:waypoint x=&quot;1979&quot; y=&quot;90&quot;/&gt;&lt;di:waypoint x=&quot;1988&quot; y=&quot;90&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Flow_20_di&quot; bpmnElement=&quot;Flow_20&quot;&gt;&lt;di:waypoint x=&quot;2112&quot; y=&quot;90&quot;/&gt;&lt;di:waypoint x=&quot;2174&quot; y=&quot;90&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Assoc_1_di&quot; bpmnElement=&quot;Assoc_1&quot;&gt;&lt;di:waypoint x=&quot;976&quot; y=&quot;230&quot;/&gt;&lt;di:waypoint x=&quot;1460&quot; y=&quot;230&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Assoc_2_di&quot; bpmnElement=&quot;Assoc_2&quot;&gt;&lt;di:waypoint x=&quot;1260&quot; y=&quot;510&quot;/&gt;&lt;di:waypoint x=&quot;1460&quot; y=&quot;230&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+    &lt;bpmndi:BPMNEdge id=&quot;Assoc_3_di&quot; bpmnElement=&quot;Assoc_3&quot;&gt;&lt;di:waypoint x=&quot;1562&quot; y=&quot;650&quot;/&gt;&lt;di:waypoint x=&quot;1504&quot; y=&quot;230&quot;/&gt;&lt;/bpmndi:BPMNEdge&gt;
+  &lt;/bpmndi:BPMNPlane&gt;&lt;/bpmndi:BPMNDiagram&gt;
+&lt;/bpmn:definitions&gt;</pre></details></section>
+<section class="band" id="kpis"><h2>Doce KPIs para medir el desempeño</h2><p>Se calculan desde la base de datos única del ERP y se muestran en el tablero gerencial.</p>
+<div class="scroll"><table class="stack"><thead><tr><th>Indicador</th><th>Fórmula</th><th>Meta</th></tr></thead><tbody><tr><td>Tiempo de espera para cita</td><td>Fecha atención − fecha solicitud</td><td class='m'>≤ 3 días</td></tr><tr><td>Tiempo de permanencia en consulta externa</td><td>Hora salida − hora check-in</td><td class='m'>≤ 60 min</td></tr><tr><td>Tiempo de entrega de resultados de laboratorio</td><td>Hora publicación − hora toma de muestra</td><td class='m'>≤ 24 h</td></tr><tr><td>Registros duplicados de pacientes</td><td>Duplicados en MPI / total pacientes × 100</td><td class='m'>< 1 %</td></tr><tr><td>Exactitud de facturación</td><td>Facturas sin observación / facturas emitidas × 100</td><td class='m'>≥ 98 %</td></tr><tr><td>Recetas dispensadas completas</td><td>Recetas completas / recetas emitidas × 100</td><td class='m'>≥ 95 %</td></tr><tr><td>Quiebres de stock de medicamentos críticos</td><td>Días con stock 0 / días del mes × 100</td><td class='m'>< 2 %</td></tr><tr><td>Rotación de inventario de farmacia</td><td>Costo de consumo / inventario promedio</td><td class='m'>≥ 6 por año</td></tr><tr><td>Satisfacción del paciente (NPS)</td><td>% promotores − % detractores</td><td class='m'>≥ 50</td></tr><tr><td>Ausentismo a citas</td><td>Citas no asistidas / citas programadas × 100</td><td class='m'>< 10 %</td></tr><tr><td>Ocupación de consultorios</td><td>Horas utilizadas / horas disponibles × 100</td><td class='m'>80–90 %</td></tr><tr><td>Actividades automatizadas</td><td>Tareas automáticas / total de tareas del proceso × 100</td><td class='m'>≥ 40 %</td></tr></tbody></table></div></section>
+<script>{document.querySelectorAll('[data-copy]').forEach(b=>b.addEventListener('click',async()=>{const t=document.getElementById(b.dataset.copy).textContent;try{await navigator.clipboard.writeText(t);b.textContent='XML copiado'}catch(e){b.textContent='Seleccione el XML y cópielo';b.nextElementSibling&&0;b.closest('section').querySelector('details').open=true}setTimeout(()=>b.textContent='Copiar XML BPMN 2.0',2500)}))}</script>
+</body></html>
